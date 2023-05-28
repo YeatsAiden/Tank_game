@@ -9,7 +9,6 @@ player = Player()
 camera = [0, 0]
 
 font = text.Font("assets/fonts/font.png", 1)
-font.create_speech_bubble("hw", "Hello World!!! :D", pg.Rect(50, 50, 200, 200))
 
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
@@ -34,7 +33,6 @@ while True:
 
     # update the screen
     DISPLAY.fill((250, 250, 250))
-    font.render_dialogue(DISPLAY, "hw")
 
     player.draw(DISPLAY, camera)
 

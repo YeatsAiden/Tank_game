@@ -17,7 +17,7 @@ class Font:
         self.size = size
         self.character_set = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '.', '-', ',', ':', '+', "'", '!', '?', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '(', ')', '/', '_', '=', '\\', '[', ']', '*', '"', '<', '>', ';']
         self.character_index = 0
-        self.charcter_width = 0
+        self.character_width = 0
         self.characters = {}
         self.text_render = pygame.event.custom_type()
         pygame.time.set_timer(self.text_render, 100)
@@ -32,12 +32,12 @@ class Font:
         for x in range(self.font_image.get_width()):
             color = self.font_image.get_at((x, 0))
             if color == (0, 0, 255, 255):
-                character_img = clip_img(self.font_image, x - self.charcter_width, 0, self.charcter_width, self.font_image.get_height())
+                character_img = clip_img(self.font_image, x - self.character_width, 0, self.character_width, self.font_image.get_height())
                 self.characters[self.character_set[self.character_index]] = pygame.transform.scale(character_img, (character_img.get_width() * size, character_img.get_height() * size))
-                self.charcter_width = 0
+                self.character_width = 0
                 self.character_index += 1
             else:
-                 self.charcter_width += 1
+                 self.character_width += 1
     
 
     def render_text(self, surf, text, x, y):
@@ -94,17 +94,18 @@ class Font:
     
 
     def check_if_sentence_is_to_long_for_speech_bubble(self, name, str):
-        # I make great function names "Don't you judge me Paul Blart, Pahud-scene", google it and watch it.
+        # I make great function names "Don't you judge me Paul Blart" - Pahud a true legend, google it and watch it.
         width = 0
         str_array = str.split('ඞ')
-        for line in str_array:
+        print(str_array)
+        for index, line in enumerate(str_array):
             for letter in line:
                 if letter != ' ' and letter != 'ඞ':
                     character_img = self.characters[letter]
                     width += character_img.get_width() + self.spacing
                 elif letter == ' ':
                     width += 5
-            if width + self.speech_bubble_text_offset[0] > self.sentences[name]["rect"].width:
+            if width + self.speech_bubble_text_offset[0] > self.sentences[name]["rect"].width and index == len(str_array) - 1:
                 return True
             else:
                 width = 0
