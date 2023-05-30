@@ -1,5 +1,5 @@
 import pygame as pg
-from math import cos, sin, radians
+from math import cos, sin, radians, degrees, atan2
 pg.init()
 
 DIS_SIZE = DIS_W, DIS_H = 800, 700

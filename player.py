@@ -4,8 +4,10 @@ from settings import *
 class Player:
     def __init__(self):
         self.image = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/tank1.png"), 2), -90)
+        self.cannon_img = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/cannon.png"), 2), -90)
         self.rotation = 90
-        self.pos = [100, 100]
+        self.rotation_offset = pg.Vector2(8, 0)
+        self.pos = pg.Vector2(100, 100)
 
         self.rotation_speed = 270
 
@@ -26,11 +28,11 @@ class Player:
         """
         self.moving_backwards = False
 
-        if keys_pressed[pg.K_UP]:
+        if keys_pressed[pg.K_UP] or keys_pressed[pg.K_w]:
             self.velocity.x += 3 * self.acceleration * dt * cos(radians(self.rotation))
             self.velocity.y -= 3 * self.acceleration * dt * sin(radians(self.rotation))
 
-        elif keys_pressed[pg.K_DOWN]:
+        elif keys_pressed[pg.K_DOWN] or keys_pressed[pg.K_s]:
             self.velocity.x -= 6 * self.acceleration*dt * cos(radians(self.rotation))
             self.velocity.y += 6 * self.acceleration*dt * sin(radians(self.rotation))
 
@@ -45,12 +47,12 @@ class Player:
         else:
             self.drifting = False
 
-        if keys_pressed[pg.K_LEFT]:
+        if keys_pressed[pg.K_LEFT] or keys_pressed[pg.K_a]:
             self.rotation += self.rotation_speed*dt
-        elif keys_pressed[pg.K_RIGHT]:
+        elif keys_pressed[pg.K_RIGHT] or keys_pressed[pg.K_d]:
             self.rotation -= self.rotation_speed*dt
 
-
+        # inexplicable sorcery
         self.looking = pg.Vector2.lerp(self.looking, ((-1)**self.moving_backwards)*pg.Vector2(cos(radians(self.rotation)), (-sin(radians(self.rotation)))), 0.05).normalize()
 
         # limit velocity
@@ -65,13 +67,25 @@ class Player:
         self.pos[1] += self.velocity.y
 
 
-    def draw(self, surf, cam_pos):
+    def draw(self, surf, cam_pos, mouse_pos):
+        self.draw_tank(surf, cam_pos)
+        self.draw_cannon(surf, mouse_pos, cam_pos)
+    
+
+    def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
         placeholder_image = pg.transform.rotate(placeholder_image, self.rotation)
-        placeholder_rect = placeholder_image.get_rect()
-        placeholder_rect.center = self.pos
+        placeholder_rect = placeholder_image.get_rect(center= self.pos - cam_pos)
+        surf.blit(placeholder_image, placeholder_rect)
+    
 
-        placeholder_rect[0] -= (cam_pos[0] - DIS_W//2)
-        placeholder_rect[1] -= (cam_pos[1] - DIS_H//2)
-
+    def draw_cannon(self, surf, mouse_pos, cam_pos):
+        x_change = mouse_pos[0] - self.pos[0] + cam_pos[0]
+        y_change = mouse_pos[1] - self.pos[1] + cam_pos[1]
+        angle = degrees(atan2(-y_change, x_change))
+        
+        placeholder_image = self.cannon_img 
+        placeholder_image = pg.transform.rotate(placeholder_image, angle)
+        placeholder_rect = placeholder_image.get_rect(center= self.pos + self.rotation_offset.rotate(-angle) - cam_pos)
+        print(placeholder_rect.center)
         surf.blit(placeholder_image, placeholder_rect)
