@@ -1,41 +1,54 @@
 from settings import *
-import settings
 from player import Player
-import text
+from text import Font
+from projectile import Projectile
 
 # initialize permanent variables
 player = Player()
 
-camera = pg.Vector2(0, 0)
+cam_pos = pg.Vector2(0, 0)
 
-font = text.Font("assets/fonts/font.png", 1)
+font = Font("assets/fonts/font.png", 1)
+
+bullets = Projectile()
+
+bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png")
 
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
 
 while True:
+    DISPLAY.fill((250, 250, 250))
+
     keys_pressed = pg.key.get_pressed()
+    mouse_pressed = pg.mouse.get_pressed()
     mouse_pos = pg.mouse.get_pos()
     dt = clock.tick(FPS)/1000
+    current_time = time.time()
 
-    settings.event = pg.event.get()
-    for event in settings.event:
+    EVENT = pg.event.get()
+    for event in EVENT:
         if event.type == pg.QUIT:
             pg.quit()
             quit()
 
     # update gamestate
     player.move(keys_pressed, dt)
+    rects = [
+        pg.Rect(0, 0, 50, 10),
+        pg.Rect(0, 100, 10, 50)
+    ]
+    bullets.bullet_process(DISPLAY, [player.pos.copy(), [5, 5], player.cannon_angle, 30, 1, pg.Rect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())], "ord_bullet", cam_pos, rects, mouse_pressed, current_time)
 
-    camera[0] += (player.pos[0] - camera[0] - DIS_W//2)/10
-    camera[1] += (player.pos[1] - camera[1] - DIS_H//2)/10
+    cam_pos[0] += (player.pos[0] - cam_pos[0] - DIS_W//2)/10
+    cam_pos[1] += (player.pos[1] - cam_pos[1] - DIS_H//2)/10
 
-    pg.display.set_caption(f"FPS: {clock.get_fps()}, cam_pos: {camera}")
+    pg.display.set_caption(f"FPS: {clock.get_fps()}, cam_pos: {cam_pos}")
 
     # update the screen
-    DISPLAY.fill((250, 250, 250))
+    
 
-    player.draw(DISPLAY, camera, mouse_pos)
+    player.draw(DISPLAY, cam_pos, mouse_pos)
 
 
     pg.display.update()

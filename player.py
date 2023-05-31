@@ -20,6 +20,8 @@ class Player:
 
         self.looking = pg.Vector2(cos(radians(self.rotation)), sin(radians(self.rotation))).normalize()
 
+        self.cannon_angle = 0
+
     def move(self, keys_pressed, dt):
         """
         :param keys_pressed = pg.key.get_pressed() somewhere in the main loop
@@ -80,12 +82,14 @@ class Player:
     
 
     def draw_cannon(self, surf, mouse_pos, cam_pos):
+        self.cannon_angle = self.calculate_angle_to_mouse(mouse_pos, cam_pos)
+        placeholder_image = self.cannon_img 
+        placeholder_image = pg.transform.rotate(placeholder_image, self.cannon_angle)
+        placeholder_rect = placeholder_image.get_rect(center= self.pos + self.rotation_offset.rotate(-self.cannon_angle) - cam_pos)
+        surf.blit(placeholder_image, placeholder_rect)
+    
+
+    def calculate_angle_to_mouse(self, mouse_pos, cam_pos):
         x_change = mouse_pos[0] - self.pos[0] + cam_pos[0]
         y_change = mouse_pos[1] - self.pos[1] + cam_pos[1]
-        angle = degrees(atan2(-y_change, x_change))
-        
-        placeholder_image = self.cannon_img 
-        placeholder_image = pg.transform.rotate(placeholder_image, angle)
-        placeholder_rect = placeholder_image.get_rect(center= self.pos + self.rotation_offset.rotate(-angle) - cam_pos)
-        print(placeholder_rect.center)
-        surf.blit(placeholder_image, placeholder_rect)
+        return degrees(atan2(-y_change, x_change))

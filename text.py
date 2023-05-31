@@ -1,39 +1,39 @@
-import pygame
-import random
-import settings
+from settings import *
 
 
 def clip_img(surf, x, y, width, height):
         # It makes clips of all your FAILURES
         img_copy = surf.copy()
-        clip_rect = pygame.Rect(x, y, width, height)
+        clip_rect = pg.Rect(x, y, width, height)
         img_copy.set_clip(clip_rect)
         return img_copy.subsurface(img_copy.get_clip())
 
 class Font:
     def __init__(self, path, size):
-        self.font_image = pygame.image.load(path).convert()
+        # Path is the path to the font image
+        # Size is the size of the font
+        self.font_image = pg.image.load(path).convert()
         self.spacing = 2
         self.size = size
         self.character_set = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '.', '-', ',', ':', '+', "'", '!', '?', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '(', ')', '/', '_', '=', '\\', '[', ']', '*', '"', '<', '>', ';']
         self.character_index = 0
         self.character_width = 0
         self.characters = {}
-        self.text_render = pygame.event.custom_type()
-        pygame.time.set_timer(self.text_render, 100)
+        self.text_render = pg.event.custom_type()
+        pg.time.set_timer(self.text_render, 100)
         self.speech_bubble_text_offset = self.calculate_offset()
 
         self.sentences = {}
-        self.blip_1 = pygame.mixer.Sound("assets/sounds/blip_1.wav")
-        self.blip_2 = pygame.mixer.Sound("assets/sounds/blip_2.wav")
-        self.blip_3 = pygame.mixer.Sound("assets/sounds/blip_3.wav")
+        self.blip_1 = pg.mixer.Sound("assets/sounds/blip_1.wav")
+        self.blip_2 = pg.mixer.Sound("assets/sounds/blip_2.wav")
+        self.blip_3 = pg.mixer.Sound("assets/sounds/blip_3.wav")
         self.blips = [self.blip_1, self.blip_2, self.blip_3]
 
         for x in range(self.font_image.get_width()):
             color = self.font_image.get_at((x, 0))
             if color == (0, 0, 255, 255):
                 character_img = clip_img(self.font_image, x - self.character_width, 0, self.character_width, self.font_image.get_height())
-                self.characters[self.character_set[self.character_index]] = pygame.transform.scale(character_img, (character_img.get_width() * size, character_img.get_height() * size))
+                self.characters[self.character_set[self.character_index]] = pg.transform.scale(character_img, (character_img.get_width() * size, character_img.get_height() * size))
                 self.character_width = 0
                 self.character_index += 1
             else:
@@ -55,7 +55,7 @@ class Font:
             else:
                 if index != 0:
                     x_offset = 0
-                    y_offset += self.font_image.get_height() * self.size
+                    y_offset += self.speech_bubble_text_offset[1]
 
          
     def create_speech_bubble(self, name, text, rect):
@@ -73,7 +73,7 @@ class Font:
     def render_dialogue(self, surf, name):
         # AAAAHHHHHHGHGHGHGHGHGHHGHGH my brain is fried and isn't capable of explaining this, try yourself, or if you are a prompt engineer and earn 25000$ a month from asking ChatGPT questions, then ask him :|
         # take note that settings.event is a global variable containing all events happening, put the events variable in a seperate file :\
-        for event in settings.event:
+        for event in EVENT:
             if event.type == self.text_render:
                 if self.sentences[name]["word_index"] != len(self.sentences[name]["words"]) and not self.sentences[name]["done"]:
                     if self.sentences[name]["letter_index"] == 0:
