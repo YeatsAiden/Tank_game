@@ -66,8 +66,8 @@ class Player:
         self.velocity = pg.Vector2.lerp(self.velocity.normalize(), self.looking, 0.6 if not self.drifting else 0.02) * self.velocity.length()
 
         # apply the movement
-        self.pos[0] += self.velocity.x
-        self.pos[1] += self.velocity.y
+        self.pos[0] += self.velocity.x - 0.001  # to make the tank not slowly move......
+        self.pos[1] += self.velocity.y - 0.001
 
 
     def draw(self, surf, cam_pos, mouse_pos):
@@ -78,7 +78,7 @@ class Player:
     def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
         placeholder_image = pg.transform.rotate(placeholder_image, self.rotation)
-        placeholder_rect = placeholder_image.get_rect(center= self.pos - cam_pos)
+        placeholder_rect = placeholder_image.get_rect(center=self.pos - cam_pos)
         surf.blit(placeholder_image, placeholder_rect)
     
 
@@ -86,7 +86,7 @@ class Player:
         self.cannon_angle = self.calculate_angle_to_mouse(mouse_pos, cam_pos)
         placeholder_image = self.cannon_img 
         placeholder_image = pg.transform.rotate(placeholder_image, self.cannon_angle)
-        placeholder_rect = placeholder_image.get_rect(center= self.pos + self.rotation_offset.rotate(-self.cannon_angle) - cam_pos)
+        placeholder_rect = placeholder_image.get_rect(center=self.pos + self.rotation_offset.rotate(-self.cannon_angle) - cam_pos)
         surf.blit(placeholder_image, placeholder_rect)
     
 
