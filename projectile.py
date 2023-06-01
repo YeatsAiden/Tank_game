@@ -4,12 +4,11 @@ from settings import *
 class Projectile:
     def __init__(self):
         self.proccesses = {}
-        
-    
+
     # "dirt_explosion", 2, True, False, dirt_img, 0.1
     def create_proccess(self, name, fire_rate, bounces, img_path):
         self.proccesses.update({
-            name:{
+            name: {
                 "can_append": False,
                 "repetition_index": 0,
                 "bullets": [],
