@@ -5,6 +5,7 @@ class Player:
     def __init__(self):
         self.image = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/tank1.png"), 2), -90)
         self.cannon_img = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/cannon.png"), 2), -90)
+
         self.rotation = 90
         self.rotation_offset = pg.Vector2(8, 0)
         self.pos = pg.Vector2(100, 100)
@@ -59,7 +60,7 @@ class Player:
 
         # limit velocity
         self.velocity = pg.Vector2(0.001, 0.001) if self.velocity.length() == 0 else self.velocity
-        self.velocity.clamp_magnitude(self.max_speed*dt)
+        self.velocity.clamp_magnitude_ip(self.max_speed*dt)
 
         # make the movement feel smooth
         self.velocity = pg.Vector2.lerp(self.velocity.normalize(), self.looking, 0.6 if not self.drifting else 0.02) * self.velocity.length()
@@ -92,4 +93,5 @@ class Player:
     def calculate_angle_to_mouse(self, mouse_pos, cam_pos):
         x_change = mouse_pos[0] - self.pos[0] + cam_pos[0]
         y_change = mouse_pos[1] - self.pos[1] + cam_pos[1]
+
         return degrees(atan2(-y_change, x_change))
