@@ -1,5 +1,5 @@
 import pygame as pg
-from math import cos, sin, radians, degrees, atan2, radians
+from math import cos, sin, radians, degrees, atan2, radians, dist
 import random
 import time
 from pytmx.util_pygame import load_pygame

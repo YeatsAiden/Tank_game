@@ -82,7 +82,10 @@ class Tank:
 
     def rotate_cannon(self, player_pos, dt):
         # make the cannon turn slowly
-        desired_cannon_rotation = calculate_angle_to_point(player_pos, self.pos)
+        if dist(self.pos, player_pos) < self.radius_of_vision:
+            desired_cannon_rotation = calculate_angle_to_point(player_pos, self.pos)
+        else:
+            desired_cannon_rotation = self.rotation
         # complicated math - i can explain it if you need
         self.cannon_rotation += (-1)**(sin(radians(self.cannon_rotation)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_rotation)) >= cos(radians(desired_cannon_rotation))) * self.turning_speed * dt
 
