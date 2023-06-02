@@ -17,9 +17,6 @@ bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png")
 
 test = DummyTank((0, 0), 90)
 
-clock = pg.time.Clock()
-FPS = 60  # bcz my potato laptop cannot handle 100 fps
-
 while True:
     DISPLAY.fill((250, 250, 250))
 

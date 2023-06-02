@@ -17,7 +17,7 @@ class Player:
 
         self.max_speed = 400
         self.acceleration = 1.5  # m/s^2
-        self.velocity = pg.Vector2(0.001, 0.001)
+        self.velocity = pg.Vector2(0.000001, 0.000001)
 
         self.looking = pg.Vector2(cos(radians(self.rotation)), sin(radians(self.rotation))).normalize()
 
@@ -59,15 +59,15 @@ class Player:
         self.looking = pg.Vector2.lerp(self.looking, ((-1)**self.moving_backwards)*pg.Vector2(cos(radians(self.rotation)), (-sin(radians(self.rotation)))), 0.05).normalize()
 
         # limit velocity
-        self.velocity = pg.Vector2(0.001, 0.001) if self.velocity.length() == 0 else self.velocity
+        self.velocity = pg.Vector2(0.000001, 0.000001) if self.velocity.length() == 0 else self.velocity
         self.velocity.clamp_magnitude_ip(self.max_speed*dt)
 
         # make the movement feel smooth
         self.velocity = pg.Vector2.lerp(self.velocity.normalize(), self.looking, 0.6 if not self.drifting else 0.02) * self.velocity.length()
 
         # apply the movement
-        self.pos[0] += self.velocity.x - 0.001  # to make the tank not slowly move......
-        self.pos[1] += self.velocity.y - 0.001
+        self.pos[0] += self.velocity.x - 0.000001  # to make the tank not slowly move......
+        self.pos[1] += self.velocity.y - 0.000001
 
 
     def draw(self, surf, cam_pos, mouse_pos, dt):
@@ -82,9 +82,17 @@ class Player:
         surf.blit(placeholder_image, placeholder_rect)
 
     def rotate_cannon(self, mouse_pos, cam_pos, dt):
+        if self.cannon_angle < 0:
+            self.cannon_angle += 360
+        elif self.cannon_angle > 360:
+            self.cannon_angle -= 360
+
         desired_cannon_rotation = self.calculate_angle_to_mouse(mouse_pos, cam_pos)
+        if desired_cannon_rotation < 0:
+            desired_cannon_rotation += 360
         # complicated math - i can explain it if you need
-        self.cannon_angle += (-1)**(sin(radians(self.cannon_angle)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_angle)) >= cos(radians(desired_cannon_rotation))) * self.rotation_speed * dt
+        self.cannon_angle += ((-1)**(sin(radians(self.cannon_angle)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_angle)) >= cos(radians(desired_cannon_rotation))) * self.rotation_speed * dt) if abs(desired_cannon_rotation - self.cannon_angle) > 2 else 0
+        print(abs(desired_cannon_rotation - self.cannon_angle), desired_cannon_rotation, self.cannon_angle)
 
     def draw_cannon(self, surf, mouse_pos, cam_pos, dt):
         self.rotate_cannon(mouse_pos, cam_pos, dt)
