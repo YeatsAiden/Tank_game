@@ -14,3 +14,10 @@ EVENT = []
 
 DRAWING_COEFICIENT = 1
 TILE_SIZE = 8
+
+
+def calculate_angle_to_point(point1, point2):
+    x_change = point1[0] - point2[0]
+    y_change = point1[1] - point2[1]
+
+    return degrees(atan2(-y_change, x_change))
