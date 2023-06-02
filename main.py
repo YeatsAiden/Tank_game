@@ -2,6 +2,7 @@ from settings import *
 from player import Player
 from text import Font
 from projectile import Projectile
+from load_map import Load_map
 
 # initialize permanent variables
 player = Player()
@@ -11,6 +12,8 @@ cam_pos = pg.Vector2(0, 0)
 font = Font("assets/fonts/font.png", 1)
 
 bullets = Projectile()
+
+load_map = Load_map(["walls"])
 
 bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png")
 
@@ -33,23 +36,21 @@ while True:
             quit()
 
     # update gamestate
-    player.move(keys_pressed, dt)
-    rects = [
-        pg.Rect(0, 0, 50, 10),
-        pg.Rect(0, 100, 10, 50)
-    ]
-    bullets.bullet_process(DISPLAY, [player.pos.copy(), [5, 5], player.cannon_angle, 30, 1, pg.Rect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())], "ord_bullet", cam_pos, rects, mouse_pressed, current_time)
+    player.move(keys_pressed, load_map.world_tiles, dt)
 
-    cam_pos[0] += (player.pos[0] - cam_pos[0] - DIS_W//2)/10
-    cam_pos[1] += (player.pos[1] - cam_pos[1] - DIS_H//2)/10
-
+    cam_pos[0] += (player.rect.x - cam_pos[0] - DIS_W//2)/10
+    cam_pos[1] += (player.rect.y - cam_pos[1] - DIS_H//2)/10
+    
     pg.display.set_caption(f"FPS: {clock.get_fps()}, cam_pos: {cam_pos}")
 
     # update the screen
-    
+
+    load_map.draw_level(load_map.world_img, DISPLAY, cam_pos)
+
+    new_bullet = [[player.rect.center[0], player.rect.center[1]], [400, 400], player.cannon_angle, 30, 1, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
+    bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_tiles, mouse_pressed, current_time, dt)
 
     player.draw(DISPLAY, cam_pos, mouse_pos)
-
 
     pg.display.update()
 
