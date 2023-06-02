@@ -2,6 +2,7 @@ from settings import *
 from player import Player
 from text import Font
 from projectile import Projectile
+from enemy import *
 
 # initialize permanent variables
 player = Player()
@@ -14,6 +15,8 @@ bullets = Projectile()
 
 bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png")
 
+test = DummyTank((0, 0), 90)
+
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
 
@@ -23,7 +26,9 @@ while True:
     keys_pressed = pg.key.get_pressed()
     mouse_pressed = pg.mouse.get_pressed()
     mouse_pos = pg.mouse.get_pos()
+
     dt = clock.tick(FPS)/1000
+
     current_time = time.time()
 
     EVENT = pg.event.get()
@@ -32,12 +37,11 @@ while True:
             pg.quit()
             quit()
 
-    # update gamestate
+    # update game-state
     player.move(keys_pressed, dt)
-    rects = [
-        pg.Rect(0, 0, 50, 10),
-        pg.Rect(0, 100, 10, 50)
-    ]
+    rects = [pg.Rect(0, 0, 50, 10),
+             pg.Rect(0, 100, 10, 50)]
+
     bullets.bullet_process(DISPLAY, [player.pos.copy(), [5, 5], player.cannon_angle, 30, 1, pg.Rect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())], "ord_bullet", cam_pos, rects, mouse_pressed, current_time)
 
     cam_pos[0] += (player.pos[0] - cam_pos[0] - DIS_W//2)/10
@@ -49,6 +53,7 @@ while True:
     
 
     player.draw(DISPLAY, cam_pos, mouse_pos)
+    test.draw(DISPLAY, player.pos, cam_pos)
 
 
     pg.display.update()

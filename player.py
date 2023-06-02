@@ -15,7 +15,7 @@ class Player:
         self.drifting = False
         self.moving_backwards = False
 
-        self.max_speed = 5
+        self.max_speed = 400
         self.acceleration = 1.5  # m/s^2
         self.velocity = pg.Vector2(0.001, 0.001)
 
