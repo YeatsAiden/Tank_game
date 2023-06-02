@@ -1,0 +1,38 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "C:/Users/Yeats Aiden/All projects/python projects/Tank_game/assets/tile_set/ordinary_tileset.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 16
+        },
+        "world.tmx": {
+            "scale": 4,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 127.25,
+                "y": 73
+            }
+        }
+    },
+    "last.imagePath": "C:/Users/Yeats Aiden/All projects/python projects/Tank_game/assets/tile_set",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+    ],
+    "project": "world.tiled-project",
+    "recentFiles": [
+        "C:/Users/Yeats Aiden/All projects/python projects/Tank_game/assets/tile_set/ordinary_tileset.tsx",
+        "world.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 8,
+        "width": 8
+    }
+}

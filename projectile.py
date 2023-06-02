@@ -23,7 +23,7 @@ class Projectile:
 
     # bullet array structure => [pos, vel, angle, duration, count_down, rect] (I promise this isn't stolen from my particle system ( ͡~ ͜ʖ ͡°))
 
-    def bullet_process(self, surf, new_bullet, bullet_proccess_name, cam_pos, tiles, mouse_pressed, current_time):
+    def bullet_process(self, surf, new_bullet, bullet_proccess_name, cam_pos, tiles, mouse_pressed, current_time, dt):
         self.proccesses[bullet_proccess_name]["can_append"] = False
         if mouse_pressed[0] and current_time - self.proccesses[bullet_proccess_name]["prev_shot"] > self.proccesses[bullet_proccess_name]["fire_rate"]:
              self.proccesses[bullet_proccess_name]["can_append"] = True
@@ -36,7 +36,7 @@ class Projectile:
             for bullet in self.proccesses[bullet_proccess_name]["bullets"]:
                 collided = False
 
-                bullet[0][0] += cos(radians(bullet[2])) * bullet[1][0]
+                bullet[0][0] += cos(radians(bullet[2])) * bullet[1][0] * dt
                 bullet[5].x = bullet[0][0]
                 if self.check_collision(bullet[5], tiles):
                         collided = True
@@ -44,7 +44,7 @@ class Projectile:
                             bullet[1][0] *= -0.5
                             bullet[0][0] += bullet[1][0] * 2
 
-                bullet[0][1] += sin(radians(-bullet[2])) * bullet[1][1]
+                bullet[0][1] += sin(radians(-bullet[2])) * bullet[1][1] * dt
                 bullet[5].y = bullet[0][1]
                 if self.check_collision(bullet[5], tiles): 
                         collided = True
@@ -52,9 +52,8 @@ class Projectile:
                             bullet[1][1] *= -0.5
                             bullet[0][1] += bullet[1][1] * 2
                 
-                img = pg.transform.rotate(pg.transform.scale(self.proccesses[bullet_proccess_name]["image"], [self.proccesses[bullet_proccess_name]["image"].get_width() * 2, self.proccesses[bullet_proccess_name]["image"].get_height() * 2]), bullet[2])
+                img = pg.transform.rotate(pg.transform.scale_by(self.proccesses[bullet_proccess_name]["image"], DRAWING_COEFICIENT), bullet[2])
                 surf.blit(img, bullet[0] - cam_pos)
-                print(len(self.proccesses[bullet_proccess_name]["bullets"]))
 
                 bullet[3] -= bullet[4]
 

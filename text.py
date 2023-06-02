@@ -41,7 +41,7 @@ class Font:
     
 
     def render_text(self, surf, text, x, y):
-        # Will render text
+        # Will render text, and make new lines if there is the AMOGUS character in the string :|
         x_offset = 0
         y_offset = 0
         for index, letter in enumerate(text):
@@ -59,7 +59,8 @@ class Font:
 
          
     def create_speech_bubble(self, name, text, rect):
-        # Creates a new speech_bubble process
+        # Creates a new speech_bubble process, similar process like the particle system and bullet system.
+        # Dunno it might eat up all your ram, I haven't tested all these thing enough ¯\_(ツ)_/¯
         self.sentences[name] = {
             "words": [word for word in text.split()],
             "sentence": [],
@@ -73,6 +74,7 @@ class Font:
     def render_dialogue(self, surf, name):
         # AAAAHHHHHHGHGHGHGHGHGHHGHGH my brain is fried and isn't capable of explaining this, try yourself, or if you are a prompt engineer and earn 25000$ a month from asking ChatGPT questions, then ask him :|
         # take note that settings.event is a global variable containing all events happening, put the events variable in a seperate file :\
+        # This took all my blood, sweat and tears to make. (╯°□°）╯︵ ┻━┻
         for event in EVENT:
             if event.type == self.text_render:
                 if self.sentences[name]["word_index"] != len(self.sentences[name]["words"]) and not self.sentences[name]["done"]:
@@ -94,10 +96,9 @@ class Font:
     
 
     def check_if_sentence_is_to_long_for_speech_bubble(self, name, str):
-        # I make great function names "Don't you judge me Paul Blart" - Pahud a true legend, google it and watch it.
+        # I make great function names "Don't you judge me Paul Blart" - Pahud a true legend, google it and watch the full scene.
         width = 0
         str_array = str.split('ඞ')
-        print(str_array)
         for index, line in enumerate(str_array):
             for letter in line:
                 if letter != ' ' and letter != 'ඞ':
