@@ -20,7 +20,6 @@ class Player:
         self.max_speed = 200
         self.acceleration = 1.5  # m/s^2
         self.velocity = pg.Vector2(0.001, 0.001)
-        self.prev_velocity = 0
 
         self.looking = pg.Vector2(cos(radians(self.rotation)), sin(radians(self.rotation))).normalize()
 
@@ -36,15 +35,15 @@ class Player:
         :return:
         """
         self.moving_backwards = False
-        self.prev_velocity = self.velocity
 
         if keys_pressed[pg.K_UP] or keys_pressed[pg.K_w]:
+            print('aahhh')
             self.velocity.x += 3 * self.acceleration * dt * cos(radians(self.rotation))
             self.velocity.y -= 3 * self.acceleration * dt * sin(radians(self.rotation))
 
         elif keys_pressed[pg.K_DOWN] or keys_pressed[pg.K_s]:
-            self.velocity.x -= 6 * self.acceleration*dt * cos(radians(self.rotation))
-            self.velocity.y += 6 * self.acceleration*dt * sin(radians(self.rotation))
+            self.velocity.x -= 6 * self.acceleration* dt * cos(radians(self.rotation))
+            self.velocity.y += 6 * self.acceleration* dt * sin(radians(self.rotation))
 
             self.moving_backwards = True
 
@@ -66,9 +65,7 @@ class Player:
         self.looking = pg.Vector2.lerp(self.looking, ((-1)**self.moving_backwards)*pg.Vector2(cos(radians(self.rotation)), (-sin(radians(self.rotation)))), 0.05).normalize()
 
         # limit velocity
-        if self.velocity.length() < 0.1:
-            self.velocity.x = self.looking.x * 0.001
-            self.velocity.y = self.looking.y * 0.001
+        self.velocity = pg.Vector2(0.001, 0.001) if self.velocity.length() == 0 else self.velocity
         self.velocity.clamp_magnitude_ip(self.max_speed*dt)
 
         # make the movement feel smooth
