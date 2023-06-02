@@ -66,7 +66,9 @@ class Player:
         self.looking = pg.Vector2.lerp(self.looking, ((-1)**self.moving_backwards)*pg.Vector2(cos(radians(self.rotation)), (-sin(radians(self.rotation)))), 0.05).normalize()
 
         # limit velocity
-        self.velocity = pg.Vector2(0.001, 0.001) if self.velocity.length() == 0 else self.velocity
+        if self.velocity.length() < 0.1:
+            self.velocity.x = self.looking.x * 0.001
+            self.velocity.y = self.looking.y * 0.001
         self.velocity.clamp_magnitude_ip(self.max_speed*dt)
 
         # make the movement feel smooth
