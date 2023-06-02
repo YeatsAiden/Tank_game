@@ -20,7 +20,7 @@ class TankGroup:
 
 class Tank:
     def __init__(self, image_path, cannon_image_path, pos, max_health, initial_rotation, size, speed, turning_speed,
-                 cannon_turning_speed, radius_of_vision):
+                 cannon_turning_speed, radius_of_vision, bullet_speed, bullet_lifespan):
 
         """
         :param image_path: path to image of the bottom part of the tank
@@ -38,7 +38,8 @@ class Tank:
         self.image = pg.transform.rotate(pg.transform.scale_by(pg.image.load(image_path), size), initial_rotation)
         self.cannon_image = pg.transform.rotate(pg.transform.scale_by(pg.image.load(cannon_image_path), size), -initial_rotation)
 
-        self.pos = pos
+        self.rect = pg.FRect(0, 0, self.image.get_width(), self.image.get_height())
+        self.rect.center = pos
 
         self.max_health = max_health
         self.health = self.max_health
@@ -46,7 +47,7 @@ class Tank:
         self.rotation = initial_rotation
         self.cannon_rotation = initial_rotation
 
-        self.rotation_offset = pg.Vector2(8, 0)
+        self.rotation_offset = pg.Vector2(4, 0)
 
         self.dead = False
 
@@ -58,22 +59,38 @@ class Tank:
         self.cannon_turning_speed = cannon_turning_speed
 
         self.radius_of_vision = radius_of_vision
+        self.bullet_speed = bullet_speed  # px/sec
+        self.bullet_lifespan = bullet_lifespan # sec
+        self.shooting_range = bullet_lifespan * bullet_speed
 
     def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
         placeholder_image = pg.transform.rotate(placeholder_image, self.rotation)
-        placeholder_rect = placeholder_image.get_rect(center=self.pos - cam_pos)
+        placeholder_rect = placeholder_image.get_rect(center=self.rect.center - cam_pos)
         surf.blit(placeholder_image, placeholder_rect)
 
     def draw_cannon(self, surf, cam_pos):
         placeholder_image = self.cannon_image
         placeholder_image = pg.transform.rotate(placeholder_image, self.cannon_rotation)
-        placeholder_rect = placeholder_image.get_rect(center=self.pos + self.rotation_offset.rotate(-self.cannon_rotation) - cam_pos)
+        placeholder_rect = placeholder_image.get_rect(center=self.rect.center + self.rotation_offset.rotate(-self.cannon_rotation) - cam_pos)
         surf.blit(placeholder_image, placeholder_rect)
 
     def draw(self, surf, cam_pos):
         self.draw_tank(surf, cam_pos)
         self.draw_cannon(surf, cam_pos)
+
+        # PROBABLY TEMPORARY
+
+        upper_circle_pos = self.rect.center - cam_pos
+        lower_circle_pos = upper_circle_pos[0], upper_circle_pos[1]+4
+
+        # draw field of view
+        pg.draw.circle(surf, (56, 53, 62), lower_circle_pos, self.radius_of_vision, 4)
+        pg.draw.circle(surf, (64, 63, 74), upper_circle_pos, self.radius_of_vision, 4)
+
+        # draw shooting range
+        pg.draw.circle(surf, (84, 30, 19), lower_circle_pos, self.shooting_range, 4)
+        pg.draw.circle(surf, (208, 60, 50), upper_circle_pos, self.shooting_range, 4)
 
     def move(self, level_map, player_pos):
         print("you forgot to implement this feature in the child class")
@@ -82,12 +99,12 @@ class Tank:
 
     def rotate_cannon(self, player_pos, dt):
         # make the cannon turn slowly
-        if dist(self.pos, player_pos) < self.radius_of_vision:
-            desired_cannon_rotation = calculate_angle_to_point(player_pos, self.pos)
+        if dist(self.rect.center, player_pos) < self.radius_of_vision:
+            desired_cannon_rotation = calculate_angle_to_point(player_pos, self.rect.center)
         else:
             desired_cannon_rotation = self.rotation
         # complicated math - i can explain it if you need
-        self.cannon_rotation += (-1)**(sin(radians(self.cannon_rotation)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_rotation)) >= cos(radians(desired_cannon_rotation))) * self.turning_speed * dt
+        self.cannon_rotation += ((-1)**(sin(radians(self.cannon_rotation)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_rotation)) >= cos(radians(desired_cannon_rotation))) * self.turning_speed * dt) if abs(desired_cannon_rotation - self.cannon_rotation) > 2 else 0
 
     def update(self, surf, player_pos, cam_pos, dt):
         self.rotate_cannon(player_pos, dt)
@@ -96,7 +113,7 @@ class Tank:
 
 class DummyTank(Tank):
     def __init__(self, pos, initial_rotation):
-        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, 10, initial_rotation, 2, 3, 90, 180, 100)
+        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, 10, initial_rotation, 2, 3, 90, 180, 100, 50, 1)
         self.bullet_type.create_proccess(name="weak_bullet", fire_rate=3, bounces=False,
                                          img_path="assets/images/bullet.png", damage=0.2)
 
