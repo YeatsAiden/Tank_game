@@ -49,7 +49,7 @@ class Projectile:
                 collided = False
 
                 bullet[0][0] += cos(radians(bullet[2])) * bullet[1][0] * dt
-                bullet[5].x = bullet[0][0]
+                bullet[5].center = bullet[0]
                 if self.check_collision(bullet[5], tiles):
                     collided = True
                     if self.proccesses[bullet_proccess_name]["bounces"]:
@@ -57,7 +57,7 @@ class Projectile:
                         bullet[0][0] += bullet[1][0] * 2
 
                 bullet[0][1] += sin(radians(-bullet[2])) * bullet[1][1] * dt
-                bullet[5].y = bullet[0][1]
+                bullet[5].center = bullet[0]
                 if self.check_collision(bullet[5], tiles): 
                         collided = True
                         if self.proccesses[bullet_proccess_name]["bounces"]:
