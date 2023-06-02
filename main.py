@@ -52,11 +52,8 @@ while True:
     # update the screen
     
 
-    player.draw(DISPLAY, cam_pos, mouse_pos)
-    test.draw(DISPLAY, player.pos, cam_pos)
+    player.draw(DISPLAY, cam_pos, mouse_pos, dt)
+    test.update(DISPLAY, player.pos, cam_pos, dt)
 
 
     pg.display.update()
-
-
-
