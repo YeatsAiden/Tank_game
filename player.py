@@ -71,41 +71,45 @@ class Player:
 
         # make the movement feel smooth
         self.velocity = pg.Vector2.lerp(self.velocity.normalize(), self.looking, 0.6 if not self.drifting else 0.02) * self.velocity.length()
-
         # check for collisions and apply movement
         self.collision_check(tiles)
 
 
-    def draw(self, surf, cam_pos, mouse_pos):
+    def draw(self, surf, cam_pos, mouse_pos, dt):
         self.draw_tank(surf, cam_pos)
-        self.draw_cannon(surf, mouse_pos, cam_pos)
-        self.draw_cursor(surf, mouse_pos, cam_pos)
+        self.draw_cannon(surf, mouse_pos, cam_pos, dt)
+        self.draw_cursor(surf, mouse_pos)
     
 
     def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
         placeholder_image = pg.transform.rotate(placeholder_image, self.rotation)
-        placeholder_rect = placeholder_image.get_rect(center= self.rect.center - cam_pos)
+        placeholder_rect = placeholder_image.get_rect(center=self.rect.center - cam_pos)
         surf.blit(placeholder_image, placeholder_rect)
-    
 
-    def draw_cannon(self, surf, mouse_pos, cam_pos):
-        self.cannon_angle = self.calculate_angle_to_mouse(mouse_pos, cam_pos)
+    def rotate_cannon(self, mouse_pos, cam_pos, dt):
+        desired_cannon_rotation = self.calculate_angle_to_mouse(mouse_pos, cam_pos)
+        # complicated math - i can explain it if you need
+        self.cannon_angle += (-1)**(sin(radians(self.cannon_angle)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_angle)) >= cos(radians(desired_cannon_rotation))) * self.rotation_speed * dt
+
+    def draw_cannon(self, surf, mouse_pos, cam_pos, dt):
+        self.rotate_cannon(mouse_pos, cam_pos, dt)
         placeholder_image = self.cannon_img 
         placeholder_image = pg.transform.rotate(placeholder_image, self.cannon_angle)
-        placeholder_rect = placeholder_image.get_rect(center= self.rect.center + self.rotation_offset.rotate(-self.cannon_angle) - cam_pos)
+        placeholder_rect = placeholder_image.get_rect(center=self.rect.center + self.rotation_offset.rotate(-self.cannon_angle) - cam_pos)
         surf.blit(placeholder_image, placeholder_rect)
     
 
-    def draw_cursor(self, surf, mouse_pos, cam_pos):
+    def draw_cursor(self, surf, mouse_pos):
         placeholder_image = self.cursor_img
-        placeholder_rect = placeholder_image.get_rect(center= mouse_pos)
+        placeholder_rect = placeholder_image.get_rect(center=mouse_pos)
         surf.blit(placeholder_image, placeholder_rect)
     
 
     def calculate_angle_to_mouse(self, mouse_pos, cam_pos):
         x_change = mouse_pos[0] - self.rect.x + cam_pos[0]
         y_change = mouse_pos[1] - self.rect.y + cam_pos[1]
+
         return degrees(atan2(-y_change, x_change))
     
 
