@@ -2,8 +2,8 @@
 <tileset version="1.9" tiledversion="1.9.2" name="ordinary_tileset" tilewidth="8" tileheight="8" tilecount="128" columns="16">
  <image source="tile_set.png" width="128" height="64"/>
  <wangsets>
-  <wangset name="dirt" type="mixed" tile="-1">
-   <wangcolor name="dirt" color="#ff0000" tile="-1" probability="1"/>
+  <wangset name="plants" type="mixed" tile="-1">
+   <wangcolor name="weeds" color="#ff0000" tile="-1" probability="0.01"/>
    <wangtile tileid="3" wangid="1,1,1,1,1,1,1,1"/>
    <wangtile tileid="4" wangid="1,1,1,1,1,1,1,1"/>
    <wangtile tileid="5" wangid="1,1,1,1,1,1,1,1"/>
