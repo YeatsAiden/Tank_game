@@ -120,10 +120,12 @@ class Player:
                 if self.velocity.x < 0:
                     self.collision_state['left'] = True
                     self.rect.left = tile.right
+                    self.velocity.x = 0
 
                 if self.velocity.x > 0:
                     self.collision_state['right'] = True
                     self.rect.right = tile.left
+                    self.velocity.x = 0
 
         self.rect.y += self.velocity.y
 
@@ -132,7 +134,9 @@ class Player:
                 if self.velocity.y > 0:
                     self.rect.bottom = tile.top
                     self.collision_state['bottom'] = True
+                    self.velocity.y = 0
 
                 if self.velocity.y < 0:
                     self.rect.top = tile.bottom
                     self.collision_state['top'] = True
+                    self.velocity.y = 0
