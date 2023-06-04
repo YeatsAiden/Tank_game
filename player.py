@@ -10,7 +10,7 @@ class Player:
         self.rotation = 0
         self.rotation_offset = pg.Vector2(2, 0)
 
-        self.pos = pg.Vector2(100, 100)
+        self.pos = pg.Vector2(300, 300)
 
         self.rotation_speed = 270
 
@@ -84,6 +84,7 @@ class Player:
         placeholder_image = pg.transform.rotate(placeholder_image, self.rotation)
         placeholder_rect = placeholder_image.get_rect(center=self.rect.center - cam_pos)
         surf.blit(placeholder_image, placeholder_rect)
+        
 
     def rotate_cannon(self, mouse_pos, cam_pos, dt):
         desired_cannon_rotation = self.calculate_angle_to_mouse(mouse_pos, cam_pos)
