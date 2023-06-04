@@ -29,35 +29,6 @@
    <wangcolor name="rigth" color="#0000ff" tile="-1" probability="1"/>
    <wangcolor name="front" color="#ff7700" tile="-1" probability="1"/>
    <wangcolor name="left" color="#00e9ff" tile="-1" probability="1"/>
-   <wangtile tileid="53" wangid="0,2,0,5,5,5,5,0"/>
-   <wangtile tileid="54" wangid="2,2,2,0,5,5,0,2"/>
-   <wangtile tileid="57" wangid="2,2,2,2,2,2,2,2"/>
-   <wangtile tileid="60" wangid="2,2,0,3,0,0,2,2"/>
-   <wangtile tileid="61" wangid="0,0,3,3,3,3,0,2"/>
-   <wangtile tileid="69" wangid="5,5,5,5,5,5,5,5"/>
-   <wangtile tileid="70" wangid="5,5,5,5,5,5,5,5"/>
-   <wangtile tileid="71" wangid="2,2,1,1,1,5,5,0"/>
-   <wangtile tileid="72" wangid="2,2,1,1,1,1,1,2"/>
-   <wangtile tileid="73" wangid="2,2,1,1,1,1,1,2"/>
-   <wangtile tileid="74" wangid="2,2,1,1,1,1,1,2"/>
-   <wangtile tileid="75" wangid="2,0,3,3,1,1,1,2"/>
-   <wangtile tileid="76" wangid="3,3,3,3,3,3,3,3"/>
-   <wangtile tileid="77" wangid="3,3,3,3,3,3,3,3"/>
-   <wangtile tileid="87" wangid="1,1,1,0,0,0,5,5"/>
-   <wangtile tileid="88" wangid="1,1,1,0,0,0,1,1"/>
-   <wangtile tileid="89" wangid="1,1,1,0,0,0,1,1"/>
-   <wangtile tileid="90" wangid="1,1,1,0,0,0,1,1"/>
-   <wangtile tileid="91" wangid="1,3,3,0,0,0,1,1"/>
-   <wangtile tileid="101" wangid="5,5,5,5,5,5,5,5"/>
-   <wangtile tileid="102" wangid="5,0,4,4,4,0,0,5"/>
-   <wangtile tileid="105" wangid="4,4,4,4,4,4,4,4"/>
-   <wangtile tileid="108" wangid="3,3,0,0,4,4,4,0"/>
-   <wangtile tileid="109" wangid="3,3,3,3,3,3,3,3"/>
-   <wangtile tileid="117" wangid="5,0,4,4,4,0,5,5"/>
-   <wangtile tileid="118" wangid="4,4,4,4,4,4,4,4"/>
-   <wangtile tileid="121" wangid="4,4,4,4,4,4,4,4"/>
-   <wangtile tileid="124" wangid="4,4,4,4,4,4,4,4"/>
-   <wangtile tileid="125" wangid="3,3,3,0,4,4,4,0"/>
   </wangset>
  </wangsets>
 </tileset>

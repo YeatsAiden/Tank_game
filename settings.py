@@ -2,7 +2,8 @@ import pygame as pg
 from math import cos, sin, radians, degrees, atan2, radians, dist
 import random
 import time
-from pytmx.util_pygame import load_pygame
+import pandas
+# Trust me bro I'm an engineer 😎
 pg.init()
 
 DIS_SIZE = DIS_W, DIS_H = 480, 320
@@ -14,6 +15,8 @@ EVENT = []
 
 DRAWING_COEFICIENT = 1
 TILE_SIZE = 8
+
+COLLISION_LAYERS = ["walls"]
 
 def clip_img(surf, x, y, width, height):
     # It makes clips of all your FAILURES

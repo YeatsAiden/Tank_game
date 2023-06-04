@@ -14,11 +14,11 @@ font = Font("assets/fonts/font.png", 1)
 
 bullets = Projectile()
 
-load_map = Load_map(["walls"])
+load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets/world/walls.csv"])
 
 bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png")
 
-test = DummyTank((0, 0), 90)
+test = DummyTank((200, 200), 90)
 
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
@@ -41,19 +41,22 @@ while True:
             quit()
 
     # update gamestate
-    player.move(keys_pressed, load_map.world_tiles, dt)
+    player.move(keys_pressed, load_map.world_rects, dt)
 
     cam_pos[0] += (player.rect.x - cam_pos[0] - DIS_W//2)/10
     cam_pos[1] += (player.rect.y - cam_pos[1] - DIS_H//2)/10
     
     pg.display.set_caption(f"FPS: {clock.get_fps()}, cam_pos: {cam_pos}")
 
+    load_map.list_of_areas_on_layers_to_be_rendered, load_map.offset = load_map.get_area_for_rendering(DISPLAY, cam_pos, load_map.world_csv_data)
+    load_map.world_rects = load_map.make_rects_array(load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered, COLLISION_LAYERS)
+
     # update the screen
 
-    load_map.draw_level(load_map.world_img, DISPLAY, cam_pos)
+    load_map.draw_world(DISPLAY, cam_pos, load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered)
 
-    new_bullet = [[player.rect.center[0], player.rect.center[1]], [400, 400], player.cannon_angle, 30, 1, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
-    bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_tiles, mouse_pressed, current_time, dt)
+    new_bullet = [[player.rect.center[0], player.rect.center[1]], 400, player.cannon_angle, 2, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
+    bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt)
 
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
     test.update(DISPLAY, player.rect.center, cam_pos, dt)

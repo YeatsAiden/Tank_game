@@ -32,7 +32,7 @@ class Projectile:
             }
         })
 
-    # bullet array structure => [pos, vel, angle, duration, count_down, rect] (I promise this isn't stolen from my particle system ( ͡~ ͜ʖ ͡°))
+    # bullet array structure => [pos, vel, angle, duration, rect] (I promise this isn't stolen from my particle system ( ͡~ ͜ʖ ͡°))
     # ok - Andrey
 
     def bullet_process(self, surf, new_bullet, bullet_proccess_name, cam_pos, tiles, mouse_pressed, current_time, dt):
@@ -48,17 +48,17 @@ class Projectile:
             for bullet in self.proccesses[bullet_proccess_name]["bullets"]:
                 collided = False
 
-                bullet[0][0] += cos(radians(bullet[2])) * bullet[1][0] * dt
-                bullet[5].center = bullet[0]
-                if self.check_collision(bullet[5], tiles):
+                bullet[0][0] += cos(radians(bullet[2])) * bullet[1] * dt
+                bullet[4].topleft = bullet[0]
+                if self.check_collision(bullet[4], tiles):
                     collided = True
                     if self.proccesses[bullet_proccess_name]["bounces"]:
                         bullet[1][0] *= -0.5
                         bullet[0][0] += bullet[1][0] * 2
 
-                bullet[0][1] += sin(radians(-bullet[2])) * bullet[1][1] * dt
-                bullet[5].center = bullet[0]
-                if self.check_collision(bullet[5], tiles): 
+                bullet[0][1] += sin(radians(-bullet[2])) * bullet[1] * dt
+                bullet[4].topleft = bullet[0]
+                if self.check_collision(bullet[4], tiles): 
                         collided = True
                         if self.proccesses[bullet_proccess_name]["bounces"]:
                             bullet[1][1] *= -0.5
@@ -67,7 +67,7 @@ class Projectile:
                 img = pg.transform.rotate(pg.transform.scale_by(self.proccesses[bullet_proccess_name]["image"], DRAWING_COEFICIENT), bullet[2])
                 surf.blit(img, bullet[0] - cam_pos)
 
-                bullet[3] -= bullet[4]
+                bullet[3] -= dt
 
                 if bullet[3] <= 0 or (collided and not self.proccesses[bullet_proccess_name]["bounces"]):
                     self.proccesses[bullet_proccess_name]["bullets"].remove(bullet)
