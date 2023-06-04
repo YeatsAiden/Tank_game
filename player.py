@@ -37,7 +37,6 @@ class Player:
         self.moving_backwards = False
 
         if keys_pressed[pg.K_UP] or keys_pressed[pg.K_w]:
-            print('aahhh')
             self.velocity.x += 3 * self.acceleration * dt * cos(radians(self.rotation))
             self.velocity.y -= 3 * self.acceleration * dt * sin(radians(self.rotation))
 

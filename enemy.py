@@ -51,7 +51,7 @@ class Tank:
 
         self.dead = False
 
-        self.bullet_type = Projectile()
+        self.bullet = Projectile()
 
         self.size = size
         self.speed = speed
@@ -62,6 +62,8 @@ class Tank:
         self.bullet_speed = bullet_speed  # px/sec
         self.bullet_lifespan = bullet_lifespan # sec
         self.shooting_range = bullet_lifespan * bullet_speed
+
+        self.cannon_on_target = False
 
     def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
@@ -92,10 +94,13 @@ class Tank:
         pg.draw.circle(surf, (84, 30, 19), lower_circle_pos, self.shooting_range, 4)
         pg.draw.circle(surf, (208, 60, 50), upper_circle_pos, self.shooting_range, 4)
 
-    def move(self, level_map, player_pos):
+    def move(self, layout, player_pos):
         print("you forgot to implement this feature in the child class")
         # this function should make the tank move based on many conditions
         # like where the player is located, are there walls i the way and etc. Maybe even a pathfinding algorithm?
+
+    def approach_movement(self, layout, player_pos):
+        pass
 
     def rotate_cannon(self, player_pos, dt):
         # make the cannon turn slowly
@@ -103,18 +108,29 @@ class Tank:
             desired_cannon_rotation = calculate_angle_to_point(player_pos, self.rect.center)
         else:
             desired_cannon_rotation = self.rotation
-        # complicated math - i can explain it if you need
-        self.cannon_rotation += ((-1)**(sin(radians(self.cannon_rotation)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_rotation)) >= cos(radians(desired_cannon_rotation))) * self.turning_speed * dt) if abs(desired_cannon_rotation - self.cannon_rotation) > 2 else 0
 
-    def update(self, surf, player_pos, cam_pos, dt):
+        # complicated math - i can explain it if you need
+        self.cannon_on_target = True if abs(desired_cannon_rotation - self.cannon_rotation) <= 2 else False
+
+        prev_rotation = self.cannon_rotation
+
+        self.cannon_rotation += ((-1)**(sin(radians(self.cannon_rotation)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_rotation)) >= cos(radians(desired_cannon_rotation))) * self.turning_speed * dt) if not self.cannon_on_target else 0
+
+    def shoot_player(self, surf, layout, player_pos, cam_pos, current_time, dt):
+        if dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target:
+            self.bullet.bullet_process(surf, [list(self.rect.center), [self.bullet_speed, self.bullet_speed], self.cannon_rotation, self.bullet_lifespan*FPS, 1, pg.FRect(0, 0, 10, 10)], "dummy_bullet", cam_pos, layout, [True], current_time, dt)
+
+    def update(self, surf, player_pos, cam_pos, layout, current_time, dt):
         self.rotate_cannon(player_pos, dt)
         self.draw(surf, cam_pos)
+        # [pos, vel, angle, duration, count_down, rect]
+        self.shoot_player(surf, layout, player_pos, cam_pos, current_time, dt)
 
 
 class DummyTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, 10, initial_rotation, 2, 3, 90, 180, 100, 50, 1)
-        self.bullet_type.create_proccess(name="weak_bullet", fire_rate=3, bounces=False,
+        self.bullet.create_proccess(name="dummy_bullet", fire_rate=3, bounces=False,
                                          img_path="assets/images/bullet.png", damage=0.2)
 
 

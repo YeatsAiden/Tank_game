@@ -18,7 +18,7 @@ load_map = Load_map(["walls"])
 
 bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png")
 
-test = DummyTank((0, 0), 90)
+test = DummyTank((200, 200), 90)
 
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
@@ -56,6 +56,6 @@ while True:
     bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_tiles, mouse_pressed, current_time, dt)
 
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
-    test.update(DISPLAY, player.rect.center, cam_pos, dt)
+    test.update(DISPLAY, player.rect.center, cam_pos, load_map.world_tiles, current_time, dt)
 
     pg.display.update()
