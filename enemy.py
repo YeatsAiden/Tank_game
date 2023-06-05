@@ -47,7 +47,7 @@ class Tank:
         self.rotation = initial_rotation
         self.cannon_rotation = initial_rotation
 
-        self.rotation_offset = pg.Vector2(4, 0)
+        self.rotation_offset = pg.Vector2(6, 0)
 
         self.dead = False
 

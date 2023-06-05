@@ -8,7 +8,7 @@ class Player:
         self.cursor_img = pg.transform.scale_by(pg.image.load("assets/images/cursor.png").convert_alpha(), DRAWING_COEFICIENT)
 
         self.rotation = 0
-        self.rotation_offset = pg.Vector2(2, 0)
+        self.rotation_offset = pg.Vector2(3, 0)
 
         self.pos = pg.Vector2(300, 300)
 
