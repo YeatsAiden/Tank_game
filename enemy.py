@@ -171,7 +171,15 @@ class Tank:
         # complicated math - i can explain it if you need
         self.cannon_on_target = True if abs(desired_cannon_rotation - self.cannon_rotation) <= 2 else False
 
-        self.cannon_rotation += ((-1)**(sin(radians(self.cannon_rotation)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_rotation)) >= cos(radians(desired_cannon_rotation))) * self.turning_speed * dt) if not self.cannon_on_target else 0
+        smallest_angle = calculate_smallest_angle(self.cannon_rotation, desired_cannon_rotation)
+
+        rotation_change = self.cannon_turning_speed * dt * (-1 if smallest_angle < 0 else 1)
+
+        if abs(rotation_change) > abs(smallest_angle):
+            self.cannon_rotation = desired_cannon_rotation
+            self.cannon_on_target = True
+        else:
+            self.cannon_rotation += rotation_change
 
     def shoot_player(self, surf, layout, player_pos, cam_pos, current_time, dt):
         if dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target:
