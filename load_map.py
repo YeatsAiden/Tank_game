@@ -56,7 +56,7 @@ class Load_map:
         return False
 
 
-    def get_area_for_rendering(self, surf, cam_pos, world_csv_data):
+    def get_areas_for_rendering(self, surf, cam_pos, world_csv_data):
         # More stuff, not really interesting ...
         layers = []
         for layer_name, csv_data in world_csv_data:
