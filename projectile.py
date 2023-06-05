@@ -36,8 +36,6 @@ class Projectile:
     # ok - Andrey
 
     def bullet_process(self, surf, new_bullet, bullet_proccess_name, cam_pos, tiles, mouse_pressed, current_time, dt):
-        if len(new_bullet) != 6:
-            raise ValueError("invalid 'new bullet' type")
         self.proccesses[bullet_proccess_name]["can_append"] = False
         if mouse_pressed[0] and current_time - self.proccesses[bullet_proccess_name]["prev_shot"] > self.proccesses[bullet_proccess_name]["fire_rate"]:
             self.proccesses[bullet_proccess_name]["can_append"] = True
