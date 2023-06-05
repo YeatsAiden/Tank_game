@@ -10,15 +10,15 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "C:/Users/Yeats Aiden/All projects/python projects/Tank_game/assets/tile_set/ordinary_tileset.tsx": {
-            "scaleInDock": 3,
-            "scaleInEditor": 5.5
+            "scaleInDock": 5.5,
+            "scaleInEditor": 11
         },
         "world.tmx": {
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 1.5,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 702.5,
-                "y": 1097
+                "x": 278.6666666666667,
+                "y": 1802
             }
         }
     },
