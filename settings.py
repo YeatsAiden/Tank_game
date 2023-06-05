@@ -3,6 +3,7 @@ from math import cos, sin, radians, degrees, atan2, radians, dist
 import random
 import time
 import pandas
+
 # Trust me bro I'm an engineer 😎
 # ok
 
@@ -40,6 +41,6 @@ def calculate_angle_to_point(point1, point2):
 def calculate_smallest_angle(A, B):
     # given angles A and B find the smallest value to append to angle A and make it become angle B
     diff = B - A
-    diff = (diff + 180) % 360 - 180
-    return diff
+    diff = (diff + 180) % 360 - 180  # magic of chatGPT
+    return diff  # i promise, this is one of the only occasions where i had to use it
 

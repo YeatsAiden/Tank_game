@@ -114,14 +114,10 @@ class Player:
     
 
     def calculate_angle_to_mouse(self, mouse_pos, cam_pos):
-        x_change = mouse_pos[0] - self.rect.x + cam_pos[0]
-        y_change = mouse_pos[1] - self.rect.y + cam_pos[1]
+        x_change = mouse_pos[0] - self.rect.centerx + cam_pos[0]
+        y_change = mouse_pos[1] - self.rect.centery + cam_pos[1]
 
-        angle = degrees(atan2(-y_change, x_change))
-
-        print(angle)
-
-        return angle
+        return degrees(atan2(-y_change, x_change))
     
 
     def collision_check(self, tiles):
