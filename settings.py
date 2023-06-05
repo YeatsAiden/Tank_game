@@ -4,6 +4,8 @@ import random
 import time
 import pandas
 # Trust me bro I'm an engineer 😎
+# ok
+
 pg.init()
 
 DIS_SIZE = DIS_W, DIS_H = 480, 320
@@ -33,4 +35,11 @@ def calculate_angle_to_point(point1, point2):
     y_change = point1[1] - point2[1]
 
     return degrees(atan2(-y_change, x_change))
+
+
+def calculate_smallest_angle(A, B):
+    # given angles A and B find the smallest value to append to angle A and make it become angle B
+    diff = B - A
+    diff = (diff + 180) % 360 - 180
+    return diff
 

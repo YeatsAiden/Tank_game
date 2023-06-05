@@ -89,7 +89,15 @@ class Player:
     def rotate_cannon(self, mouse_pos, cam_pos, dt):
         desired_cannon_rotation = self.calculate_angle_to_mouse(mouse_pos, cam_pos)
         # complicated math - i can explain it if you need
-        self.cannon_angle += (-1)**(sin(radians(self.cannon_angle)) >= sin(radians(-desired_cannon_rotation))) * (-1)**(cos(radians(self.cannon_angle)) >= cos(radians(desired_cannon_rotation))) * self.rotation_speed * dt
+
+        smallest_angle = calculate_smallest_angle(self.cannon_angle, desired_cannon_rotation)
+
+        rotation_change = self.rotation_speed * dt * (-1 if smallest_angle < 0 else 1)
+
+        if abs(rotation_change) > abs(smallest_angle):
+            self.cannon_angle = desired_cannon_rotation
+        else:
+            self.cannon_angle += rotation_change
 
     def draw_cannon(self, surf, mouse_pos, cam_pos, dt):
         self.rotate_cannon(mouse_pos, cam_pos, dt)
@@ -109,7 +117,11 @@ class Player:
         x_change = mouse_pos[0] - self.rect.x + cam_pos[0]
         y_change = mouse_pos[1] - self.rect.y + cam_pos[1]
 
-        return degrees(atan2(-y_change, x_change))
+        angle = degrees(atan2(-y_change, x_change))
+
+        print(angle)
+
+        return angle
     
 
     def collision_check(self, tiles):
