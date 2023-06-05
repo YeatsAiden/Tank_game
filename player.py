@@ -8,7 +8,7 @@ class Player:
         self.cursor_img = pg.transform.scale_by(pg.image.load("assets/images/cursor.png").convert_alpha(), DRAWING_COEFICIENT)
 
         self.rotation = 0
-        self.rotation_offset = pg.Vector2(2, 0)
+        self.rotation_offset = pg.Vector2(3, 0)
 
         self.pos = pg.Vector2(300, 300)
 
@@ -117,7 +117,9 @@ class Player:
         x_change = mouse_pos[0] - self.rect.centerx + cam_pos[0]
         y_change = mouse_pos[1] - self.rect.centery + cam_pos[1]
 
-        return degrees(atan2(-y_change, x_change))
+        angle = degrees(atan2(-y_change, x_change))
+
+        return angle
     
 
     def collision_check(self, tiles):
