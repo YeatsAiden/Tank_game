@@ -1,4 +1,5 @@
 from settings import *
+from game_math import clip_img
 
 # Note I don't care a bit about "YoU CAn ONlY InDEnT YoUR CoDE 4 TiMeS" :p
 class Load_map:
@@ -87,7 +88,7 @@ class Load_map:
                     x += 1
                 y += 1 
         return img
-    
+
 
     def draw_world(self, surf, cam_pos, offset, areas_in_layers_to_be_rendered):
         surf.blit(self.make_world_image(areas_in_layers_to_be_rendered), (0, 0) - cam_pos + [offset[0] * TILE_SIZE, offset[1] * TILE_SIZE] - [TILE_SIZE, TILE_SIZE])
