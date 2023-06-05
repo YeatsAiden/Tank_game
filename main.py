@@ -59,6 +59,6 @@ while True:
     bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt)
 
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
-    test.update(DISPLAY, player.rect.center, cam_pos, dt)
+    test.update(DISPLAY, player.rect.center, cam_pos, load_map.world_rects, current_time, dt)
 
     pg.display.update()
