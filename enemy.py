@@ -113,6 +113,18 @@ class Tank:
 
         self.approach_distance = approach_distance
 
+        self.desired_cannon_rotation = 0
+        self.desired_base_rotation = 0
+
+        self.time_since_last_cannon_patrol_rotation = 0
+        self.time_since_last_base_patrol_rotation = 0
+
+        self.cannon_patrol_turning_time = 4  # rotations per second
+        self.base_patrol_turning_time = 8  # per second
+        self.cannon_rotated_to_the_left = False
+        self.base_rotated_to_the_left = False
+        self.patrol_rotation_offset = 55  # degrees
+
     def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
         placeholder_image = pg.transform.rotate(placeholder_image, self.rotation)
@@ -143,10 +155,10 @@ class Tank:
         # like where the player is located, are there walls in the way and etc. Maybe even a pathfinding algorithm?
 
     def drive_forward(self, layout, dt):
-        self.rect.centerx += self.speed * cos(radians(self.rotation)) * dt
+        self.rect.x += self.speed * cos(radians(self.rotation)) * dt
 
         for rect in layout:
-            if self.rect.colliderect(rect):
+            if self.rect.colliderect(rect) and rect != self.rect:
                 if cos(radians(self.rotation)) < 0:
                     self.rect.left = rect.right
                 else:
@@ -154,10 +166,10 @@ class Tank:
 
                 break
 
-        self.rect.centery += self.speed * sin(radians(-self.rotation)) * dt  # WHY IS SIN ALWAYS NEGATIVE???? I MEAN, I DONT UNDERSTAND
+        self.rect.y += self.speed * sin(radians(-self.rotation)) * dt  # WHY IS SIN ALWAYS NEGATIVE???? I MEAN, I DONT UNDERSTAND
 
         for rect in layout:
-            if self.rect.colliderect(rect):
+            if self.rect.colliderect(rect) and self.rect != rect:
                 if sin(radians(self.rotation)) < 0:
                     self.rect.bottom = rect.top
                 else:
@@ -172,22 +184,25 @@ class Tank:
 
             if (distance_to_player > self.approach_distance) and (abs(calculate_smallest_angle(self.rotation, calculate_angle_to_point(player_pos, self.rect.center))) < 60):
                 self.drive_forward(layout, dt)
+        else:
+            self.patrol_base(dt)
 
 
     def rotate_cannon(self, player_pos, dt):
         # make the cannon turn slowly
         distance = dist(self.rect.center, player_pos)
         if distance < self.radius_of_vision:
-            desired_cannon_rotation = calculate_angle_to_point(player_pos, self.rect.center)
+            self.desired_cannon_rotation = calculate_angle_to_point(player_pos, self.rect.center)
         else:
-            desired_cannon_rotation = self.rotation
+            self.patrol_cannon(dt)
 
-        self.cannon_rotation = rotate_to(self.cannon_rotation, desired_cannon_rotation, self.cannon_turning_speed*dt)
+        self.cannon_rotation = rotate_to(self.cannon_rotation, self.desired_cannon_rotation, self.cannon_turning_speed*dt)
 
-        if (self.cannon_rotation == desired_cannon_rotation) and distance < self.radius_of_vision:
+        if (self.cannon_rotation == self.desired_cannon_rotation) and distance < self.radius_of_vision:
             self.cannon_on_target = True
         else:
             self.cannon_on_target = False
+
 
 
     def shoot_player(self, surf, layout, player_pos, cam_pos, current_time, dt, player):
@@ -196,6 +211,24 @@ class Tank:
     def check_if_dead(self):
         if self.health <= 0:
             self.dead = True
+
+    def patrol_cannon(self, dt):
+        self.time_since_last_cannon_patrol_rotation += dt
+
+        if self.time_since_last_cannon_patrol_rotation > self.cannon_patrol_turning_time:
+            self.time_since_last_cannon_patrol_rotation -= self.cannon_patrol_turning_time
+            self.cannon_rotated_to_the_left = not self.cannon_rotated_to_the_left
+
+        self.desired_cannon_rotation = self.rotation + (((-1)**self.cannon_rotated_to_the_left)*self.patrol_rotation_offset)
+
+    def patrol_base(self, dt):
+        self.time_since_last_base_patrol_rotation += dt
+
+        if self.time_since_last_base_patrol_rotation > self.base_patrol_turning_time:
+            self.time_since_last_base_patrol_rotation -= self.base_patrol_turning_time
+            self.base_rotated_to_the_left = not self.base_rotated_to_the_left
+
+        self.rotation = rotate_to(self.rotation, (((-1)**self.base_rotated_to_the_left) * self.patrol_rotation_offset), self.turning_speed*dt)
 
     def update(self, surf, player_pos, cam_pos, layout, current_time, dt, player):
         self.move(layout, player_pos, dt)
@@ -279,6 +312,21 @@ class BuffTank(Tank):
 
     def move(self, layout, player_pos, dt):
         self.approach_movement(layout, player_pos, dt)
+
+
+class FastTank(Tank):
+    def __init__(self, pos, initial_rotation):
+        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, max_health=70, initial_rotation=initial_rotation, size=1,
+                         speed=70, turning_speed=90, cannon_turning_speed=90, radius_of_vision=100, bullet_speed=1000,
+                         bullet_lifespan=0.1, approach_distance=200, bullet_name="fast_bullet")
+
+        self.bullet.create_proccess(name="fast_bullet", fire_rate=10, bounces=False, img_path="assets/images/bullet.png",
+                                    damage=20)
+
+    def move(self, layout, player_pos, dt):
+        self.approach_movement(layout, player_pos, dt)
+
+
 
 
 class BossTank(Tank):

@@ -18,7 +18,8 @@ load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets
 
 bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png", 4)
 
-scrapyard_enemies_group = TankGroup([BuffTank((200, 200), 90), BuffTank((300, 300), 90), BuffTank((200, 400), 90), BuffTank((400, 400), 180)])
+scrapyard_enemies_group = TankGroup([NormalTank((200, 200), 90), NormalTank((250, 250), 90), NormalTank((300, 300), 90), NormalTank((350, 350), 90),
+                                     NormalTank((400, 400), 90), NormalTank((450, 450), 90), NormalTank((500, 500), 90), NormalTank((550, 550), 90)])
 current_enemies_group = scrapyard_enemies_group
 
 clock = pg.time.Clock()
@@ -47,10 +48,12 @@ while True:
     cam_pos[0] += (player.rect.x - cam_pos[0] - DIS_W//2)/10
     cam_pos[1] += (player.rect.y - cam_pos[1] - DIS_H//2)/10
     
-    pg.display.set_caption(f"FPS: {clock.get_fps()}, cam_pos: {cam_pos}")
+    pg.display.set_caption(f"FPS: {clock.get_fps()}, hp: {player.health}")
 
     load_map.list_of_areas_on_layers_to_be_rendered, load_map.offset = load_map.get_areas_for_rendering(DISPLAY, cam_pos, load_map.world_csv_data)
     load_map.world_rects = load_map.make_rects_array(load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered, COLLISION_LAYERS)
+
+    print(current_enemies_group.tanks[0].desired_cannon_rotation)
 
     # update the screen
     load_map.draw_world(DISPLAY, cam_pos, load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered)
