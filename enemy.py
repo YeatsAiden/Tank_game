@@ -141,9 +141,28 @@ class Tank:
         # this function should make the tank move based on many conditions
         # like where the player is located, are there walls i the way and etc. Maybe even a pathfinding algorithm?
 
-    def drive_forward(self, dt):
+    def drive_forward(self, layout, dt):
         self.rect.centerx += self.speed * cos(radians(self.rotation)) * dt
+
+        for rect in layout:
+            if self.rect.colliderect(rect):
+                if cos(radians(self.rotation)) < 0:
+                    self.rect.left = rect.right
+                else:
+                    self.rect.right = rect.left
+
+                break
+
         self.rect.centery += self.speed * sin(radians(-self.rotation)) * dt  # WHY IS SIN ALWAYS NEGATIVE???? I MEAN, I DONT UNDERSTAND
+
+        for rect in layout:
+            if self.rect.colliderect(rect):
+                if sin(radians(self.rotation)) < 0:
+                    self.rect.bottom = rect.top
+                else:
+                    self.rect.top = rect.bottom
+
+                break
 
     def approach_movement(self, layout, player_pos, dt):
         distance_to_player = dist(player_pos, self.rect.center)
@@ -151,7 +170,7 @@ class Tank:
             self.rotation = rotate_to(self.rotation, calculate_angle_to_point(player_pos, self.rect.center), self.turning_speed*dt)
 
             if (distance_to_player > self.approach_distance) and (abs(calculate_smallest_angle(self.rotation, calculate_angle_to_point(player_pos, self.rect.center))) < 60):
-                self.drive_forward(dt)
+                self.drive_forward(layout, dt)
 
 
     def rotate_cannon(self, player_pos, dt):
@@ -212,7 +231,7 @@ class DummyTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, 10, initial_rotation, size=1.5,
                          speed=30, turning_speed=23, cannon_turning_speed=45, radius_of_vision=100, bullet_speed=200,
-                         bullet_lifespan=0.5, approach_distance=100)
+                         bullet_lifespan=0.5, approach_distance=0)
 
         self.bullet.create_proccess(name="dummy_bullet", fire_rate=3, bounces=False, img_path="assets/images/bullet.png",
                                     damage=0.2)

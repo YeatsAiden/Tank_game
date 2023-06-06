@@ -18,8 +18,7 @@ load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets
 
 bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png", 4)
 
-test = DummyTank((200, 200), 90)
-scrapyard_enemies_group = TankGroup([test])
+scrapyard_enemies_group = TankGroup([DummyTank((200, 200), 90), DummyTank((300, 300), 90), DummyTank((200, 400), 90)])
 current_enemies_group = scrapyard_enemies_group
 
 clock = pg.time.Clock()
