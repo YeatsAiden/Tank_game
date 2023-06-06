@@ -3,22 +3,6 @@ from projectile import Projectile
 from game_math import *
 
 
-class TankGroup:
-    def __init__(self, tanks):
-        self.tanks = tanks  # a list of all tanks
-
-    def update(self):
-        pass
-        # check if any of the tanks died, if so remove them from the list
-        # basically call "update" of every tank
-
-    def draw(self, surf):
-        pass
-
-    def move(self, player_pos):
-        pass
-
-
 class Turret:
     def __init__(self, image_path, cannon_image_path, pos, max_health, size, cannon_turning_speed, bullet_speed, bullet_lifespan):
 
@@ -66,8 +50,6 @@ class Turret:
     def rotate_cannon(self, player_pos, dt):
         # make the cannon turn slowly
         desired_cannon_rotation = calculate_angle_to_point(player_pos, self.rect.center)
-
-        # BRO DON'T FORGET TO UPDATE THIS
 
     def shoot_player(self, surf, layout, player_pos, cam_pos, current_time, dt):
         if dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target:
@@ -190,6 +172,10 @@ class Tank:
     def shoot_player(self, surf, layout, player_pos, cam_pos, current_time, dt):
         self.bullet.bullet_process(surf, [list(self.rect.center), self.bullet_speed, self.cannon_rotation, self.bullet_lifespan, pg.FRect(0, 0, 10, 10)], "dummy_bullet", cam_pos, layout, [dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target], current_time, dt)
 
+    def check_if_dead(self):
+        if self.health <= 0:
+            self.dead = True
+
     def update(self, surf, player_pos, cam_pos, layout, current_time, dt):
         self.move(layout, player_pos, dt)
 
@@ -197,12 +183,36 @@ class Tank:
         self.shoot_player(surf, layout, player_pos, cam_pos, current_time, dt)
         self.draw(surf, cam_pos)
 
+        self.check_if_dead()
+
+
+class TankGroup:
+    def __init__(self, tanks: list[Tank]):
+        self.tanks = tanks  # a list of all tanks
+
+    def update(self, surf, player_pos, cam_pos, layout, current_time, dt):
+        tanks_to_remove = []
+        for i, tank in enumerate(self.tanks):
+            tank.update(surf, player_pos, cam_pos, layout, current_time, dt)
+
+            if tank.dead:
+                tanks_to_remove.append(i)
+
+        for i in tanks_to_remove:
+            self.tanks.pop(i)
+
+    def draw(self, surf):
+        pass
+
+    def move(self, player_pos):
+        pass
+
 
 class DummyTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, 10, initial_rotation, size=1.5,
-                         speed=30, turning_speed=45, cannon_turning_speed=90, radius_of_vision=200, bullet_speed=100,
-                         bullet_lifespan=1, approach_distance=50)
+                         speed=30, turning_speed=23, cannon_turning_speed=45, radius_of_vision=100, bullet_speed=200,
+                         bullet_lifespan=0.5, approach_distance=100)
 
         self.bullet.create_proccess(name="dummy_bullet", fire_rate=3, bounces=False, img_path="assets/images/bullet.png",
                                     damage=0.2)
