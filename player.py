@@ -22,6 +22,10 @@ class Player:
         self.acceleration = 1.5  # m/s^2
         self.velocity = pg.Vector2(0.001, 0.001)
 
+        self.max_health = 100
+        self.health = 100
+        self.dead = False
+
         self.looking = pg.Vector2(cos(radians(self.rotation)), sin(radians(self.rotation))).normalize()
 
         self.cannon_angle = 0
@@ -73,6 +77,9 @@ class Player:
         # check for collisions and apply movement
         self.collision_check(tiles)
 
+    def check_if_dead(self):
+        if self.health <= 0:
+            self.dead = True
 
     def draw(self, surf, cam_pos, mouse_pos, dt):
         self.draw_tank(surf, cam_pos)

@@ -18,7 +18,7 @@ load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets
 
 bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png", 4)
 
-scrapyard_enemies_group = TankGroup([DummyTank((200, 200), 90), DummyTank((300, 300), 90), DummyTank((200, 400), 90)])
+scrapyard_enemies_group = TankGroup([BuffTank((200, 200), 90), BuffTank((300, 300), 90), BuffTank((200, 400), 90), BuffTank((400, 400), 180)])
 current_enemies_group = scrapyard_enemies_group
 
 clock = pg.time.Clock()
@@ -58,7 +58,7 @@ while True:
     new_bullet = [[player.rect.center[0], player.rect.center[1]], 400, player.cannon_angle, 2, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
     bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, current_enemies_group.tanks)
 
-    current_enemies_group.update(DISPLAY, player.rect.center, cam_pos, load_map.world_rects, current_time, dt)
+    current_enemies_group.update(DISPLAY, player, cam_pos, load_map.world_rects, current_time, dt)
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
 
     pg.display.update()
