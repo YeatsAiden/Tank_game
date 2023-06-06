@@ -201,7 +201,7 @@ class Tank:
 class DummyTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, 10, initial_rotation, size=1.5,
-                         speed=30, turning_speed=45, cannon_turning_speed=90, radius_of_vision=100, bullet_speed=100,
+                         speed=30, turning_speed=45, cannon_turning_speed=90, radius_of_vision=200, bullet_speed=100,
                          bullet_lifespan=1, approach_distance=50)
 
         self.bullet.create_proccess(name="dummy_bullet", fire_rate=3, bounces=False, img_path="assets/images/bullet.png",
