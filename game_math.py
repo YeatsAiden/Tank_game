@@ -34,3 +34,50 @@ def rotate_to(current_angle, target_angle, rotation_step):
         current_angle += rotation_change
 
     return current_angle
+
+
+# everything below is a scrapped function, don't play attention
+
+def merge_able(rect1, rect2):
+    edges = {rect1.topleft, rect1.topright, rect1.bottomleft, rect1.bottomright,
+             rect2.topleft, rect2.topright, rect2.bottomleft, rect2.bottomright}
+
+    if len(edges) == 6:
+        return True
+
+    return False
+
+
+def merge_rects(rects: list[pg.FRect]):
+    unchanged = False
+
+    while unchanged is False:
+        old_len = len(rects)
+
+        do_break = False
+        for i, rect1 in enumerate(rects):
+            if do_break:
+                break
+
+            for j, rect2 in enumerate(rects):
+                if do_break:
+                    break
+
+                if merge_able(rect1, rect2):
+                    rects.remove(rect1)
+                    rects.remove(rect2)
+
+                    rects.append(rect1.union(rect2))
+
+                    do_break = True
+
+
+        if old_len == len(rects):
+            unchanged = True
+
+
+    return rects
+
+
+def random_color():
+    return random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)

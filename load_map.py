@@ -1,5 +1,6 @@
 from settings import *
-from game_math import clip_img
+from game_math import *
+
 
 # Note "YoU CAn ONlY InDEnT YoUR CoDE 4 TiMeS" :p
 class Load_map:
@@ -17,7 +18,7 @@ class Load_map:
         self.world_image = 0
 
         self.images_dict = self.make_image_dict(self.tile_set_img)
-    
+
 
     def make_rects_array(self, offset, areas_in_layers_to_be_rendered):
         array = []
@@ -30,7 +31,7 @@ class Load_map:
                         rect = pg.FRect((x + offset[0]) * TILE_SIZE - TILE_SIZE, (y + offset[1]) * TILE_SIZE - TILE_SIZE, TILE_SIZE, TILE_SIZE)
                         array.append(rect)
                     x += 1
-                y += 1 
+                y += 1
 
         return array
     
@@ -45,7 +46,7 @@ class Load_map:
                     tile_img[y//TILE_SIZE * tile_set_img.get_width()//TILE_SIZE + x//TILE_SIZE] = img
         
         return tile_img
-    
+
 
     def check_if_sprite_is_not_transparent(self, surf):
         for y in range(0, surf.get_height()):

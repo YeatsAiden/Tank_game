@@ -35,7 +35,10 @@ class Projectile:
     # bullet array structure => [pos, vel, angle, duration, rect] (I promise this isn't stolen from my particle system ( ͡~ ͜ʖ ͡°))
     # ok - Andrey
 
-    def bullet_process(self, surf, new_bullet, bullet_proccess_name, cam_pos, tiles, mouse_pressed, current_time, dt):
+    def bullet_process(self, surf, new_bullet, bullet_proccess_name, cam_pos, tiles, mouse_pressed, current_time, dt, entities=None):
+        if entities is None:
+            entities = []
+
         self.proccesses[bullet_proccess_name]["can_append"] = False
         if mouse_pressed[0] and current_time - self.proccesses[bullet_proccess_name]["prev_shot"] > self.proccesses[bullet_proccess_name]["fire_rate"]:
             self.proccesses[bullet_proccess_name]["can_append"] = True
@@ -48,6 +51,7 @@ class Projectile:
             for bullet in self.proccesses[bullet_proccess_name]["bullets"]:
                 collided = False
 
+                # check collisions with the static environment
                 bullet[0][0] += cos(radians(bullet[2])) * bullet[1] * dt
                 bullet[4].topleft = bullet[0]
                 if self.check_collision(bullet[4], tiles):
@@ -63,12 +67,26 @@ class Projectile:
                         if self.proccesses[bullet_proccess_name]["bounces"]:
                             bullet[1][1] *= -0.5
                             bullet[0][1] += bullet[1][1] * 2
-                
+
+                # check if the bullet collided with any entities
+                for entity in entities:
+                    if not collided:
+                        if bullet[4].colliderect(entity):
+                            entity.health -= self.proccesses[bullet_proccess_name]["damage"]
+                            collided = True
+                    elif self.proccesses[bullet_proccess_name]["area_damage"]:
+                        distance = dist(entity.rect.center, bullet[4].center)
+                        if distance <= self.proccesses[bullet_proccess_name]["damage_radius"]:
+                            entity.health -= self.proccesses[bullet_proccess_name]["damage"]/distance
+
+                # draw the bullet
                 img = pg.transform.rotate(pg.transform.scale_by(self.proccesses[bullet_proccess_name]["image"], DRAWING_COEFICIENT), bullet[2])
                 surf.blit(img, bullet[0] - cam_pos)
 
+                # reduce the lifespan of the bullet
                 bullet[3] -= dt
 
+                # delete the bullet if it died
                 if bullet[3] <= 0 or (collided and not self.proccesses[bullet_proccess_name]["bounces"]):
                     self.proccesses[bullet_proccess_name]["bullets"].remove(bullet)
 

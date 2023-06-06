@@ -16,9 +16,10 @@ bullets = Projectile()
 
 load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets/world/walls.csv", "assets/world/spawns.csv", "assets/world/barriers.csv"])
 
-bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png")
+bullets.create_proccess("ord_bullet", 0.2, False, "assets/images/bullet.png", 4)
 
-test = DummyTank((200, 200), 90)
+scrapyard_enemies_group = TankGroup([DummyTank((200, 200), 90), DummyTank((300, 300), 90), DummyTank((200, 400), 90)])
+current_enemies_group = scrapyard_enemies_group
 
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
@@ -55,9 +56,9 @@ while True:
     load_map.draw_world(DISPLAY, cam_pos, load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered)
 
     new_bullet = [[player.rect.center[0], player.rect.center[1]], 400, player.cannon_angle, 2, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
-    bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt)
+    bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, current_enemies_group.tanks)
 
-    test.update(DISPLAY, player.rect.center, cam_pos, load_map.world_rects, current_time, dt)
+    current_enemies_group.update(DISPLAY, player.rect.center, cam_pos, load_map.world_rects, current_time, dt)
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
 
     pg.display.update()
