@@ -1,7 +1,7 @@
 from settings import *
 from game_math import clip_img
 
-# Note I don't care a bit about "YoU CAn ONlY InDEnT YoUR CoDE 4 TiMeS" :p
+# Note "YoU CAn ONlY InDEnT YoUR CoDE 4 TiMeS" :p
 class Load_map:
     def __init__(self, world_data_path, world_csv_data_paths):
         self.world_csv_data = [[data.split("/")[-1].replace(".csv", ""), pandas.read_csv(data)] for data in world_csv_data_paths]
@@ -19,14 +19,14 @@ class Load_map:
         self.images_dict = self.make_image_dict(self.tile_set_img)
     
 
-    def make_rects_array(self, offset, areas_in_layers_to_be_rendered, collision_layers):
+    def make_rects_array(self, offset, areas_in_layers_to_be_rendered):
         array = []
-        for name, layer in areas_in_layers_to_be_rendered:
+        for layer_name, layer in areas_in_layers_to_be_rendered:
             y = 0
             for row in layer:
                 x = 0
                 for tile in row:
-                    if tile != -1 and name in collision_layers:
+                    if tile != -1 and layer_name in COLLISION_LAYERS:
                         rect = pg.FRect((x + offset[0]) * TILE_SIZE - TILE_SIZE, (y + offset[1]) * TILE_SIZE - TILE_SIZE, TILE_SIZE, TILE_SIZE)
                         array.append(rect)
                     x += 1
@@ -75,16 +75,26 @@ class Load_map:
         return layers, offset
     
 
+    # def get_all_spawn_positions(self, world_csv_data, spawn_layer_name):
+    #     positions = []
+    #     for layer_name, csv_data in world_csv_data:
+    #         if layer_name == spawn_layer_name:
+    #             for index, row in csv_data.iterrows():
+    #                 for tile in row:
+
+    
+
     def make_world_image(self, areas_in_layers_to_be_rendered):
         # Kinda CRINGE
         img = pg.Surface((len(areas_in_layers_to_be_rendered[0][1][0]) * TILE_SIZE, len(areas_in_layers_to_be_rendered[0][1]) * TILE_SIZE))
-        for name, layer in areas_in_layers_to_be_rendered:
+        for layer_name, layer in areas_in_layers_to_be_rendered:
             y = 0
             for row in layer:
                 x = 0
                 for tile in row:
                     if tile != -1:
-                        img.blit(self.images_dict[tile], (x * TILE_SIZE, y * TILE_SIZE))
+                        if layer_name not in INVISIBLE_LAYERS:
+                            img.blit(self.images_dict[tile], (x * TILE_SIZE, y * TILE_SIZE))
                     x += 1
                 y += 1 
         return img

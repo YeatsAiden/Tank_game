@@ -20,5 +20,6 @@ DRAWING_COEFICIENT = 1
 TILE_SIZE = 8
 
 FPS = 60
-COLLISION_LAYERS = ["walls"]
+COLLISION_LAYERS = ["walls", "barriers"]
+INVISIBLE_LAYERS = ["spawns"]
 
