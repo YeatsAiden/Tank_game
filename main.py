@@ -17,7 +17,7 @@ bullets = Projectile()
 
 load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets/world/walls.csv", "assets/world/spawns.csv"])
 
-bullets.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25)
+bullets.create_proccess("ord_bullet", 0.1, False, "assets/images/player/bullet.png", 25)
 
 
 level_1 = TankGroup([], "level_1")
@@ -40,15 +40,15 @@ for pos, name in load_map.get_all_spawn_positions(load_map.world_csv_data, 'spaw
     elif name == "mini_gun_tank":
         level_5.tanks.append(MiniGunTank(pos, random.randint(-180, 180)))
     elif name == "vertical_gate_level_1":
-        gates.insert(0 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+        gates.append([0 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos)])
     elif name == "horizontal_gate_level_2":
-        gates.insert(1, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
+        gates.append([1, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos)])
     elif name == "horizontal_gate_level_3":
-        gates.insert(2, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
+        gates.append([2, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos)])
     elif name == "vertical_gate_level_4":
-        gates.insert(3 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+        gates.append([3 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos)])
     elif name == "vertical_gate_level_5":
-        gates.insert(4 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+        gates.append([4 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos)])
     elif name == "player":
         player.rect.center = pos
 
@@ -83,7 +83,7 @@ while True:
     pg.display.set_caption(f"FPS: {clock.get_fps()}, hp: {player.health}")
 
     load_map.list_of_areas_on_layers_to_be_rendered, load_map.offset = load_map.get_areas_for_rendering(DISPLAY, cam_pos, load_map.world_csv_data)
-    load_map.world_rects = load_map.make_rects_array(load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered) + [gate.rect for gate in gates]
+    load_map.world_rects = load_map.make_rects_array(load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered) + [gate[1].rect for gate in gates]
 
     for level in levels:
         entities += level.tanks
@@ -93,12 +93,13 @@ while True:
 
     new_bullet = [[player.rect.center[0], player.rect.center[1]], 400, player.cannon_angle, 2, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
     bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, entities)
-    
     for index, level in enumerate(levels):
         level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, current_time, dt)
-        gates[index].draw(DISPLAY, cam_pos)
-        if len(level.tanks) == 0:
-            gates[index].closed = False
+        
+        for gate in gates:
+            gate[1].draw(DISPLAY, cam_pos)
+            if index == gate[0] and len(level.tanks) == 0:
+                gate[1].closed = False
 
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
 
