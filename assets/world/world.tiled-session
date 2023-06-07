@@ -14,11 +14,11 @@
             "scaleInEditor": 11
         },
         "world.tmx": {
-            "scale": 0.5,
-            "selectedLayer": 3,
+            "scale": 0.75,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 882,
-                "y": 1188
+                "x": 1796,
+                "y": 1176
             }
         }
     },

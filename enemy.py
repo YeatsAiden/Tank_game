@@ -113,6 +113,8 @@ class Tank:
 
         self.approach_distance = approach_distance
 
+        self.rect_nearby = False
+
     def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
         placeholder_image = pg.transform.rotate(placeholder_image, self.rotation)
@@ -129,24 +131,24 @@ class Tank:
         self.draw_tank(surf, cam_pos)
         self.draw_cannon(surf, cam_pos)
 
-        # no longer temporary
-        upper_circle_pos = self.rect.center - cam_pos
-        lower_circle_pos = upper_circle_pos[0]+1, upper_circle_pos[1]+1
-
-        # draw shooting range
-        pg.draw.circle(surf, (84, 30, 19), lower_circle_pos, self.shooting_range, 3)
-        pg.draw.circle(surf, (208, 60, 50), upper_circle_pos, self.shooting_range, 3)
 
     def move(self, layout, player_pos, dt):
         print("you forgot to implement this feature in the child class")
         # this function should make the tank move based on many conditions
         # like where the player is located, are there walls in the way and etc. Maybe even a pathfinding algorithm?
 
-    def drive_forward(self, layout, dt):
+    def drive_forward(self, tank_rects, tiles, dt):
+        self.rect_nearby = False
+
+        for rect in tank_rects:
+            if dist(self.rect.center, rect.center) < 20:
+                self.rect_nearby = True
+                self.rotation = rotate_to(self.rotation, calculate_angle_to_point(self.rect.center, rect.center), self.turning_speed * dt)
+        
         self.rect.centerx += self.speed * cos(radians(self.rotation)) * dt
 
-        for rect in layout:
-            if self.rect.colliderect(rect):
+        for rect in tiles:
+            if self.rect.colliderect(rect) and self.rect != rect:
                 if cos(radians(self.rotation)) < 0:
                     self.rect.left = rect.right
                 else:
@@ -156,8 +158,8 @@ class Tank:
 
         self.rect.centery += self.speed * sin(radians(-self.rotation)) * dt  # WHY IS SIN ALWAYS NEGATIVE???? I MEAN, I DONT UNDERSTAND
 
-        for rect in layout:
-            if self.rect.colliderect(rect):
+        for rect in tiles:
+            if self.rect.colliderect(rect) and self.rect != rect:
                 if sin(radians(self.rotation)) < 0:
                     self.rect.bottom = rect.top
                 else:
@@ -165,13 +167,13 @@ class Tank:
 
                 break
 
-    def approach_movement(self, layout, player_pos, dt):
+    def approach_movement(self, tank_rects, tiles, player_pos, dt):
         distance_to_player = dist(player_pos, self.rect.center)
         if distance_to_player <= self.radius_of_vision:
             self.rotation = rotate_to(self.rotation, calculate_angle_to_point(player_pos, self.rect.center), self.turning_speed*dt)
 
             if (distance_to_player > self.approach_distance) and (abs(calculate_smallest_angle(self.rotation, calculate_angle_to_point(player_pos, self.rect.center))) < 60):
-                self.drive_forward(layout, dt)
+                self.drive_forward(tank_rects, tiles, dt)
 
 
     def rotate_cannon(self, player_pos, dt):
@@ -190,31 +192,32 @@ class Tank:
             self.cannon_on_target = False
 
 
-    def shoot_player(self, surf, layout, player_pos, cam_pos, current_time, dt, player):
-        self.bullet.bullet_process(surf, [list(self.rect.center), self.bullet_speed, self.cannon_rotation, self.bullet_lifespan, pg.FRect(0, 0, 10, 10)], self.bullet_name, cam_pos, layout, [dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target], current_time, dt, [player])
+    def shoot_player(self, surf, tiles, player_pos, cam_pos, current_time, dt, player):
+        self.bullet.bullet_process(surf, [list(self.rect.center), self.bullet_speed, self.cannon_rotation, self.bullet_lifespan, pg.FRect(0, 0, 10, 10)], self.bullet_name, cam_pos, tiles, [dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target], current_time, dt, [player])
 
     def check_if_dead(self):
         if self.health <= 0:
             self.dead = True
 
-    def update(self, surf, player_pos, cam_pos, layout, current_time, dt, player):
-        self.move(layout, player_pos, dt)
+    def update(self, surf, player_pos, cam_pos, tank_rects, tiles, current_time, dt, player):
+        self.move(tank_rects, tiles, player_pos, dt)
 
         self.rotate_cannon(player_pos, dt)
-        self.shoot_player(surf, layout, player_pos, cam_pos, current_time, dt, player)
+        self.shoot_player(surf, tiles, player_pos, cam_pos, current_time, dt, player)
         self.draw(surf, cam_pos)
 
         self.check_if_dead()
 
 
 class TankGroup:
-    def __init__(self, tanks: list[Tank]):
+    def __init__(self, tanks: list[Tank], name):
         self.tanks = tanks  # a list of all tanks
+        self.group_name = name
 
-    def update(self, surf, player, cam_pos, layout, current_time, dt):
+    def update(self, surf, player, cam_pos, tank_rects, tiles, current_time, dt):
         tanks_to_remove = []
         for i, tank in enumerate(self.tanks):
-            tank.update(surf, player.rect.center, cam_pos, layout, current_time, dt, player)
+            tank.update(surf, player.rect.center, cam_pos, tank_rects, tiles, current_time, dt, player)
 
             if tank.dead:
                 tanks_to_remove.append(i)
@@ -229,69 +232,82 @@ class TankGroup:
         pass
 
 
-class DummyTank(Tank):
-    def __init__(self, pos, initial_rotation):
-        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, 10, initial_rotation, size=1,
-                         speed=15, turning_speed=23, cannon_turning_speed=45, radius_of_vision=100, bullet_speed=200,
-                         bullet_lifespan=0.5, approach_distance=50, bullet_name="dummy_bullet")
-
-        self.bullet.create_proccess(name="dummy_bullet", fire_rate=3, bounces=False, img_path="assets/images/bullet.png",
-                                    damage=1)
-
-    def move(self, layout, player_pos, dt):
-        self.approach_movement(layout, player_pos, dt)
-
-
 class NormalTank(Tank):
     def __init__(self, pos, initial_rotation):
-        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, max_health=30, initial_rotation=initial_rotation, size=1.6,
-                         speed=45, turning_speed=45, cannon_turning_speed=90, radius_of_vision=190, bullet_speed=250,
+        super().__init__("assets/images/player/tank.png", "assets/images/player/cannon.png", pos, max_health=30, initial_rotation=initial_rotation, size=1.2,
+                         speed=100, turning_speed=120, cannon_turning_speed=180, radius_of_vision=190, bullet_speed=250,
                          bullet_lifespan=0.6, approach_distance=75, bullet_name="normal_bullet")
 
-        self.bullet.create_proccess(name="normal_bullet", fire_rate=1.5, bounces=False, img_path="assets/images/bullet.png",
-                                    damage=4)
+        self.bullet.create_proccess(name="normal_bullet", fire_rate=1.5, bounces=False, img_path="assets/images/player/bullet.png",
+                                    damage=10)
 
-    def move(self, layout, player_pos, dt):
-        self.approach_movement(layout, player_pos, dt)
+    def move(self, tank_rects, tiles, player_pos, dt):
+        self.approach_movement(tank_rects, tiles, player_pos, dt)
 
 
 class MiniTank(Tank):
     def __init__(self, pos, initial_rotation):
-        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, max_health=7, initial_rotation=initial_rotation, size=0.5,
+        super().__init__("assets/images/mini_tank/mini_tank.png", "assets/images/mini_tank/mini_tank_cannon.png", pos, max_health=7, initial_rotation=initial_rotation, size=1,
                          speed=60, turning_speed=90, cannon_turning_speed=180, radius_of_vision=300, bullet_speed=300,
-                         bullet_lifespan=0.75, approach_distance=0, bullet_name="mini_bullet")
+                         bullet_lifespan=0.75, approach_distance=10, bullet_name="mini_bullet")
 
-        self.bullet.create_proccess(name="mini_bullet", fire_rate=0.5, bounces=False, img_path="assets/images/bullet.png",
-                                    damage=1)
+        self.bullet.create_proccess(name="mini_bullet", fire_rate=1, bounces=False, img_path="assets/images/mini_tank/mini_tank_bullet.png",
+                                    damage=4)
 
-    def move(self, layout, player_pos, dt):
-        self.approach_movement(layout, player_pos, dt)
+    def move(self, tank_rects, tiles, player_pos, dt):
+        self.approach_movement(tank_rects, tiles, player_pos, dt)
 
 
 class BuffTank(Tank):
     def __init__(self, pos, initial_rotation):
-        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, max_health=70, initial_rotation=initial_rotation, size=2.5,
-                         speed=15, turning_speed=40, cannon_turning_speed=90, radius_of_vision=400, bullet_speed=200,
+        super().__init__("assets/images/buff_tank/buff_tank.png", "assets/images/buff_tank/buff_tank_cannon.png", pos, max_health=70, initial_rotation=initial_rotation, size=2,
+                         speed=15, turning_speed=40, cannon_turning_speed=90, radius_of_vision=400, bullet_speed=400,
                          bullet_lifespan=1.5, approach_distance=200, bullet_name="buff_bullet")
 
-        self.bullet.create_proccess(name="buff_bullet", fire_rate=10, bounces=False, img_path="assets/images/bullet.png",
-                                    damage=20)
+        self.bullet.create_proccess(name="buff_bullet", fire_rate=10, bounces=False, img_path="assets/images/buff_tank/buff_tank_bullet.png",
+                                    damage=25)
 
-    def move(self, layout, player_pos, dt):
-        self.approach_movement(layout, player_pos, dt)
+    def move(self, tank_rects, tiles, player_pos, dt):
+        self.approach_movement(tank_rects, tiles, player_pos, dt)
+
+
+class FastTank(Tank):
+    def __init__(self, pos, initial_rotation):
+        super().__init__("assets/images/fast_tank/fast_tank.png", "assets/images/fast_tank/fast_tank_cannon.png", pos, max_health=30, initial_rotation=initial_rotation, size=1,
+                         speed=200, turning_speed=270, cannon_turning_speed=180, radius_of_vision=200, bullet_speed=250,
+                         bullet_lifespan=1.5, approach_distance=75, bullet_name="fast_bullet")
+
+        self.bullet.create_proccess(name="fast_bullet", fire_rate=1, bounces=False, img_path="assets/images/fast_tank/fast_tank_bullet.png",
+                                    damage=10)
+
+    def move(self, tank_rects, tiles, player_pos, dt):
+        self.approach_movement(tank_rects, tiles, player_pos, dt)
+
+
+class MiniGunTank(Tank):
+    def __init__(self, pos, initial_rotation):
+        super().__init__("assets/images/mini_gun_tank/mini_gun_tank.png", "assets/images/mini_gun_tank/mini_gun_tank_cannon.png", pos, max_health=30, initial_rotation=initial_rotation, size=1.6,
+                         speed=50, turning_speed=90, cannon_turning_speed=270, radius_of_vision=200, bullet_speed=250,
+                         bullet_lifespan=0.5, approach_distance=75, bullet_name="a_lot_of_bullets")
+
+        self.bullet.create_proccess(name="a_lot_of_bullets", fire_rate=0.1, bounces=False, img_path="assets/images/mini_gun_tank/mini_gun_tank_bullet.png",
+                                    damage=1)
+
+    def move(self, tank_rects, tiles, player_pos, dt):
+        self.approach_movement(tank_rects, tiles, player_pos, dt)
 
 
 class BossTank(Tank):
     def __init__(self, pos, initial_rotation):
-        super().__init__("assets/images/tank1.png", "assets/images/Cannon.png", pos, max_health=500, initial_rotation=initial_rotation, size=6,
+        super().__init__("assets/images/player/tank.png", "assets/images/player/cannon.png", pos, max_health=500, initial_rotation=initial_rotation, size=6,
                          speed=10, turning_speed=40, cannon_turning_speed=180, radius_of_vision=1000, bullet_speed=300,
                          bullet_lifespan=4, approach_distance=300, bullet_name="boss_bullet")
 
-        self.bullet.create_proccess(name="boss_bullet", fire_rate=10, bounces=False, img_path="assets/images/bullet.png",
+        self.bullet.create_proccess(name="boss_bullet", fire_rate=10, bounces=False, img_path="assets/images/player/bullet.png",
                                     damage=20)
 
-    def move(self, layout, player_pos, dt):
-        self.approach_movement(layout, player_pos, dt)
+    def move(self, tank_rects, tiles, player_pos, dt):
+        self.approach_movement(tank_rects, tiles, player_pos, dt)
 
 
 

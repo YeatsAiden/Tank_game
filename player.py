@@ -4,8 +4,8 @@ from game_math import *
 
 class Player:
     def __init__(self):
-        self.image = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/tank1.png").convert_alpha(), DRAWING_COEFICIENT), -90)
-        self.cannon_img = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/cannon.png").convert_alpha(), DRAWING_COEFICIENT), -90)
+        self.image = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/player/tank.png").convert_alpha(), DRAWING_COEFICIENT), -90)
+        self.cannon_img = pg.transform.rotate(pg.transform.scale_by(pg.image.load("assets/images/player/cannon.png").convert_alpha(), DRAWING_COEFICIENT), -90)
         self.cursor_img = pg.transform.scale_by(pg.image.load("assets/images/cursor.png").convert_alpha(), DRAWING_COEFICIENT)
 
         self.rotation = 0
@@ -30,8 +30,7 @@ class Player:
 
         self.cannon_angle = 0
 
-        self.collision_state = {"right": False, "left": False, "top": False, "bottom": False}
-        self.rect = pg.FRect(self.pos[0], self.pos[1], self.image.get_width(), self.image.get_height())
+        self.rect = pg.FRect(self.pos[0], self.pos[1], self.image.get_width() - 2, self.image.get_height() - 2)
 
     def move(self, keys_pressed, tiles, dt):
         """
@@ -132,19 +131,15 @@ class Player:
 
     def collision_check(self, tiles):
         # Look man I promise this was not stolen :\
-        self.collision_state = {"right": False, "left": False, "top": False, "bottom": False}
-
         self.rect.x += self.velocity.x
 
         for tile in tiles:
             if tile.colliderect(self.rect):
                 if self.velocity.x < 0:
-                    self.collision_state['left'] = True
                     self.rect.left = tile.right
                     self.velocity.x = 0
 
                 if self.velocity.x > 0:
-                    self.collision_state['right'] = True
                     self.rect.right = tile.left
                     self.velocity.x = 0
 
@@ -154,10 +149,8 @@ class Player:
             if tile.colliderect(self.rect):
                 if self.velocity.y > 0:
                     self.rect.bottom = tile.top
-                    self.collision_state['bottom'] = True
                     self.velocity.y = 0
 
                 if self.velocity.y < 0:
                     self.rect.top = tile.bottom
-                    self.collision_state['top'] = True
                     self.velocity.y = 0

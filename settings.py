@@ -22,4 +22,5 @@ TILE_SIZE = 8
 FPS = 60
 COLLISION_LAYERS = ["walls", "barriers"]
 INVISIBLE_LAYERS = ["spawns"]
+VISIBLE_LAYERS = ["walls, barriers", "floor"]
 

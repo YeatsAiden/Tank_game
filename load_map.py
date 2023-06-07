@@ -76,13 +76,51 @@ class Load_map:
         return layers, offset
     
 
-    # def get_all_spawn_positions(self, world_csv_data, spawn_layer_name):
-    #     positions = []
-    #     for layer_name, csv_data in world_csv_data:
-    #         if layer_name == spawn_layer_name:
-    #             for index, row in csv_data.iterrows():
-    #                 for tile in row:
+    def get_all_spawn_positions(self, world_csv_data, spawn_layer_name):
+        positions = []
+        for layer_name, csv_data in world_csv_data:
+            if layer_name == spawn_layer_name:
+                y = 0
+                for index, row in csv_data.iterrows():
+                    x = 0
+                    for tile in row:
+                        if tile != -1:
+                            positions.append([pg.Vector2(x * TILE_SIZE + TILE_SIZE/2, y * TILE_SIZE + TILE_SIZE/2), self.decide_spawn(self.images_dict[tile])])
+                        x += 1
+                    y += 1 
+        
+        return positions
+    
 
+    def decide_spawn(self, surf):
+        for y in range(0, surf.get_height()):
+            for x in range(0, surf.get_width()):
+                color = surf.get_at((x, y))
+                if color[3] > 0:
+                    if color == pg.Color(180, 82, 82, 255):
+                        return "normal_tank"
+                    elif color == pg.Color(211, 160, 104, 255):
+                        return "mini_tank"
+                    elif color == pg.Color(75, 128, 202, 255):
+                        return "buff_tank"
+                    elif color == pg.Color(194, 211, 104, 255):
+                        return "fast_tank"
+                    elif color == pg.Color(207, 138, 203, 255):
+                        return "mini_gun_tank"
+                    elif color == pg.Color(36, 23, 27, 255):
+                        return "turret"
+                    elif color == pg.Color(33, 33, 35, 255):
+                        return "player"
+                    elif color == pg.Color(237, 225, 158, 255):
+                        return "vertical_gate_level_1"
+                    elif color == pg.Color(69, 68, 79, 255):
+                        return "horizontal_gate_level_2"
+                    elif color == pg.Color(78, 88, 74, 255):
+                        return "horizontal_gate_level_3"
+                    elif color == pg.Color(134, 129, 136, 255):
+                        return "vertical_gate_level_4"
+                    elif color == pg.Color(58, 56, 88, 255):
+                        return "vertical_gate_level_5"
     
 
     def make_world_image(self, areas_in_layers_to_be_rendered):
@@ -93,9 +131,8 @@ class Load_map:
             for row in layer:
                 x = 0
                 for tile in row:
-                    if tile != -1:
-                        if layer_name not in INVISIBLE_LAYERS:
-                            img.blit(self.images_dict[tile], (x * TILE_SIZE, y * TILE_SIZE))
+                    if tile != -1 and layer_name not in INVISIBLE_LAYERS:
+                        img.blit(self.images_dict[tile], (x * TILE_SIZE, y * TILE_SIZE))
                     x += 1
                 y += 1 
         return img
