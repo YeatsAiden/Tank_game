@@ -17,7 +17,7 @@ bullets = Projectile()
 
 load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets/world/walls.csv", "assets/world/spawns.csv"])
 
-bullets.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25)
+bullets.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25, deals_area_damage=True, damage_r=100)
 
 
 level_1 = TankGroup([], "level_1")
@@ -99,6 +99,8 @@ while True:
         gates[index].draw(DISPLAY, cam_pos)
         if len(level.tanks) == 0:
             gates[index].closed = False
+
+    print(len(level_2.tank))
 
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
 

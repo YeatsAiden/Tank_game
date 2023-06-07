@@ -1,5 +1,5 @@
 import pygame as pg
-from math import cos, sin, radians, degrees, atan2, radians, dist
+from math import cos, sin, radians, degrees, atan2, radians, dist, acos
 import random
 import time
 import pandas

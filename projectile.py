@@ -74,10 +74,11 @@ class Projectile:
                         if bullet[4].colliderect(entity):
                             entity.health -= self.proccesses[bullet_proccess_name]["damage"]
                             collided = True
+                            print(entity.health)
                     elif self.proccesses[bullet_proccess_name]["area_damage"]:
                         distance = dist(entity.rect.center, bullet[4].center)
                         if distance <= self.proccesses[bullet_proccess_name]["damage_radius"]:
-                            entity.health -= self.proccesses[bullet_proccess_name]["damage"]/distance
+                            entity.health -= self.proccesses[bullet_proccess_name]["damage"]*abs(sin(acos(distance/self.proccesses[bullet_proccess_name]["damage_radius"])))
 
                 # draw the bullet
                 img = pg.transform.rotate(pg.transform.scale_by(self.proccesses[bullet_proccess_name]["image"], DRAWING_COEFICIENT), bullet[2])
