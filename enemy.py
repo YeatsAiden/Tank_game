@@ -113,7 +113,21 @@ class Tank:
 
         self.approach_distance = approach_distance
 
+
         self.rect_nearby = False
+
+        self.desired_cannon_rotation = 0
+        self.desired_base_rotation = 0
+
+        self.time_since_last_cannon_patrol_rotation = 0
+        self.time_since_last_base_patrol_rotation = 0
+
+        self.cannon_patrol_turning_time = 4  # rotations per second
+        self.base_patrol_turning_time = 8  # per second
+        self.cannon_rotated_to_the_left = False
+        self.base_rotated_to_the_left = False
+        self.patrol_rotation_offset = 55  # degrees
+
 
     def draw_tank(self, surf, cam_pos):
         placeholder_image = self.image  # we need to preserve the original image untouched
@@ -132,10 +146,11 @@ class Tank:
         self.draw_cannon(surf, cam_pos)
 
 
-    def move(self, layout, player_pos, dt):
+    def move(self, tank_rects, tiles, player_pos, dt):
         print("you forgot to implement this feature in the child class")
         # this function should make the tank move based on many conditions
         # like where the player is located, are there walls in the way and etc. Maybe even a pathfinding algorithm?
+
 
     def drive_forward(self, tank_rects, tiles, dt):
         self.rect_nearby = False
@@ -156,7 +171,8 @@ class Tank:
 
                 break
 
-        self.rect.centery += self.speed * sin(radians(-self.rotation)) * dt  # WHY IS SIN ALWAYS NEGATIVE???? I MEAN, I DONT UNDERSTAND
+        self.rect.y += self.speed * sin(radians(-self.rotation)) * dt  # WHY IS SIN ALWAYS NEGATIVE???? I MEAN, I DONT UNDERSTAND
+
 
         for rect in tiles:
             if self.rect.colliderect(rect) and self.rect != rect:
@@ -174,19 +190,21 @@ class Tank:
 
             if (distance_to_player > self.approach_distance) and (abs(calculate_smallest_angle(self.rotation, calculate_angle_to_point(player_pos, self.rect.center))) < 60):
                 self.drive_forward(tank_rects, tiles, dt)
+        else:
+            self.patrol_base(dt)
 
 
     def rotate_cannon(self, player_pos, dt):
         # make the cannon turn slowly
         distance = dist(self.rect.center, player_pos)
         if distance < self.radius_of_vision:
-            desired_cannon_rotation = calculate_angle_to_point(player_pos, self.rect.center)
+            self.desired_cannon_rotation = calculate_angle_to_point(player_pos, self.rect.center)
         else:
-            desired_cannon_rotation = self.rotation
+            self.patrol_cannon(dt)
 
-        self.cannon_rotation = rotate_to(self.cannon_rotation, desired_cannon_rotation, self.cannon_turning_speed*dt)
+        self.cannon_rotation = rotate_to(self.cannon_rotation, self.desired_cannon_rotation, self.cannon_turning_speed*dt)
 
-        if (self.cannon_rotation == desired_cannon_rotation) and distance < self.radius_of_vision:
+        if (self.cannon_rotation == self.desired_cannon_rotation) and distance < self.radius_of_vision:
             self.cannon_on_target = True
         else:
             self.cannon_on_target = False
@@ -195,9 +213,29 @@ class Tank:
     def shoot_player(self, surf, tiles, player_pos, cam_pos, current_time, dt, player):
         self.bullet.bullet_process(surf, [list(self.rect.center), self.bullet_speed, self.cannon_rotation, self.bullet_lifespan, pg.FRect(0, 0, 10, 10)], self.bullet_name, cam_pos, tiles, [dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target], current_time, dt, [player])
 
+
     def check_if_dead(self):
         if self.health <= 0:
             self.dead = True
+
+
+    def patrol_cannon(self, dt):
+        self.time_since_last_cannon_patrol_rotation += dt
+
+        if self.time_since_last_cannon_patrol_rotation > self.cannon_patrol_turning_time:
+            self.time_since_last_cannon_patrol_rotation -= self.cannon_patrol_turning_time
+            self.cannon_rotated_to_the_left = not self.cannon_rotated_to_the_left
+
+        self.desired_cannon_rotation = self.rotation + (((-1)**self.cannon_rotated_to_the_left)*self.patrol_rotation_offset)
+
+    def patrol_base(self, dt):
+        self.time_since_last_base_patrol_rotation += dt
+
+        if self.time_since_last_base_patrol_rotation > self.base_patrol_turning_time:
+            self.time_since_last_base_patrol_rotation -= self.base_patrol_turning_time
+            self.base_rotated_to_the_left = not self.base_rotated_to_the_left
+
+        self.rotation = rotate_to(self.rotation, (((-1)**self.base_rotated_to_the_left) * self.patrol_rotation_offset), self.turning_speed*dt)
 
     def update(self, surf, player_pos, cam_pos, tank_rects, tiles, current_time, dt, player):
         self.move(tank_rects, tiles, player_pos, dt)

@@ -19,6 +19,7 @@ load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets
 
 bullets.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25)
 
+
 level_1 = TankGroup([], "level_1")
 level_2 = TankGroup([], "level_2")
 level_3 = TankGroup([], "level_3")
@@ -28,7 +29,6 @@ levels = [level_1, level_2, level_3, level_4, level_5]
 gates = []
 
 for pos, name in load_map.get_all_spawn_positions(load_map.world_csv_data, 'spawns'):
-    # print(name)
     if name == "normal_tank":
         level_1.tanks.append(NormalTank(pos, random.randint(-180, 180)))
     elif name == "mini_tank":
@@ -80,7 +80,7 @@ while True:
     cam_pos[0] += (player.rect.x - cam_pos[0] - DIS_W//2)/10
     cam_pos[1] += (player.rect.y - cam_pos[1] - DIS_H//2)/10
     
-    pg.display.set_caption(f"FPS: {clock.get_fps()}, cam_pos: {cam_pos}")
+    pg.display.set_caption(f"FPS: {clock.get_fps()}, hp: {player.health}")
 
     load_map.list_of_areas_on_layers_to_be_rendered, load_map.offset = load_map.get_areas_for_rendering(DISPLAY, cam_pos, load_map.world_csv_data)
     load_map.world_rects = load_map.make_rects_array(load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered) + [gate.rect for gate in gates]
