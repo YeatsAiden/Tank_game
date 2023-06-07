@@ -17,7 +17,8 @@ bullets = Projectile()
 
 load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets/world/walls.csv", "assets/world/spawns.csv"])
 
-bullets.create_proccess("ord_bullet", 0.1, False, "assets/images/player/bullet.png", 25)
+
+bullets.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25, deals_area_damage=False, damage_r=0, sound=NORMAL_CANNON)
 
 
 level_1 = TankGroup([], "level_1")

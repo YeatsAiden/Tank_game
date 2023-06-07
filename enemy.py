@@ -277,7 +277,7 @@ class NormalTank(Tank):
                          bullet_lifespan=0.6, approach_distance=75, bullet_name="normal_bullet")
 
         self.bullet.create_proccess(name="normal_bullet", fire_rate=1.5, bounces=False, img_path="assets/images/player/bullet.png",
-                                    damage=10)
+                                    damage=10, sound=NORMAL_CANNON)
 
     def move(self, tank_rects, tiles, player_pos, dt):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
@@ -290,7 +290,7 @@ class MiniTank(Tank):
                          bullet_lifespan=0.75, approach_distance=10, bullet_name="mini_bullet")
 
         self.bullet.create_proccess(name="mini_bullet", fire_rate=1, bounces=False, img_path="assets/images/mini_tank/mini_tank_bullet.png",
-                                    damage=4)
+                                    damage=4, sound=MINI_TURRET)
 
     def move(self, tank_rects, tiles, player_pos, dt):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
@@ -303,7 +303,7 @@ class BuffTank(Tank):
                          bullet_lifespan=1.5, approach_distance=200, bullet_name="buff_bullet")
 
         self.bullet.create_proccess(name="buff_bullet", fire_rate=10, bounces=False, img_path="assets/images/buff_tank/buff_tank_bullet.png",
-                                    damage=25)
+                                    damage=25, sound=BIG_CHUNGUS)
 
     def move(self, tank_rects, tiles, player_pos, dt):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
@@ -316,7 +316,7 @@ class FastTank(Tank):
                          bullet_lifespan=1.5, approach_distance=75, bullet_name="fast_bullet")
 
         self.bullet.create_proccess(name="fast_bullet", fire_rate=1, bounces=False, img_path="assets/images/fast_tank/fast_tank_bullet.png",
-                                    damage=10)
+                                    damage=10, sound=NORMAL_CANNON)
 
     def move(self, tank_rects, tiles, player_pos, dt):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
@@ -329,7 +329,7 @@ class MiniGunTank(Tank):
                          bullet_lifespan=0.5, approach_distance=75, bullet_name="a_lot_of_bullets")
 
         self.bullet.create_proccess(name="a_lot_of_bullets", fire_rate=0.1, bounces=False, img_path="assets/images/mini_gun_tank/mini_gun_tank_bullet.png",
-                                    damage=1)
+                                    damage=1, sound=MINIGUN)
 
     def move(self, tank_rects, tiles, player_pos, dt):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
@@ -342,7 +342,7 @@ class BossTank(Tank):
                          bullet_lifespan=4, approach_distance=300, bullet_name="boss_bullet")
 
         self.bullet.create_proccess(name="boss_bullet", fire_rate=10, bounces=False, img_path="assets/images/player/bullet.png",
-                                    damage=20)
+                                    damage=2, sound=NORMAL_CANNON)
 
     def move(self, tank_rects, tiles, player_pos, dt):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
