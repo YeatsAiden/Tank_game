@@ -6,7 +6,7 @@ class Projectile:
         self.proccesses = {}
 
     # "dirt_explosion", 2, True, False, dirt_img, 0.1     - ?????????
-    def create_proccess(self, name, fire_rate, bounces, img_path, damage=0, deals_area_damage=False, damage_r=0):
+    def create_proccess(self, name, fire_rate, bounces, img_path, damage=0, deals_area_damage=False, damage_r=0, sound=None):
         """
         name; name of the process
         fire_rate: how fast does it shoot per second
@@ -15,6 +15,7 @@ class Projectile:
         damage: ....
         deals_area_damage: the purpose is in the name
         damage_r: how far from the collision does the damage reach
+        sound: pg.mixer.Sound("whatever")
         """
 
         self.proccesses.update({
@@ -29,6 +30,7 @@ class Projectile:
                 "prev_shot": 0,
                 "bounces": bounces,
                 "image": pg.image.load(img_path).convert_alpha(),
+                "sound": sound
             }
         })
 
@@ -46,6 +48,7 @@ class Projectile:
 
         if self.proccesses[bullet_proccess_name]["can_append"]:
             self.proccesses[bullet_proccess_name]["bullets"].append(new_bullet)
+            self.proccesses[bullet_proccess_name]["sound"].play()
 
         if len(self.proccesses[bullet_proccess_name]["bullets"]) > 0:
             for bullet in self.proccesses[bullet_proccess_name]["bullets"]:
@@ -74,7 +77,6 @@ class Projectile:
                         if bullet[4].colliderect(entity):
                             entity.health -= self.proccesses[bullet_proccess_name]["damage"]
                             collided = True
-                            print(entity.health)
                     elif self.proccesses[bullet_proccess_name]["area_damage"]:
                         distance = dist(entity.rect.center, bullet[4].center)
                         if distance <= self.proccesses[bullet_proccess_name]["damage_radius"]:
