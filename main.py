@@ -65,7 +65,6 @@ def reset():
 
 reset()
 
-
 while True:
     if player.health <= 0:
         reset()
@@ -113,7 +112,8 @@ while True:
     #     print(mouse_pos + cam_pos)
 
     for index, level in enumerate(levels):
-        level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, current_time, dt)
+        level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered, current_time, dt)
+
         
         for i, gate in enumerate(gates):
             gate.draw(DISPLAY, cam_pos)
