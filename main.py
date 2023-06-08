@@ -30,7 +30,7 @@ def reset():
     level_4 = TankGroup([], "level_4")
     level_5 = TankGroup([], "level_5")
     levels = [level_1, level_2, level_3, level_4, level_5]
-    gates = []
+    gates = [0, 1, 2, 3, 4]
 
     for pos, name in load_map.get_all_spawn_positions(load_map.world_csv_data, 'spawns'):
         if name == "normal_tank":
@@ -44,15 +44,15 @@ def reset():
         elif name == "mini_gun_tank":
             level_5.tanks.append(MiniGunTank(pos, random.randint(-180, 180)))
         elif name == "vertical_gate_level_1":
-            gates.insert(0, Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+            gates[0] = Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos)
         elif name == "horizontal_gate_level_2":
-            gates.insert(1, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
+            gates[1] = Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos)
         elif name == "horizontal_gate_level_3":
-            gates.insert(2, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
+            gates[2] = Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos)
         elif name == "vertical_gate_level_4":
-            gates.insert(3, Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+            gates[3] = Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos)
         elif name == "vertical_gate_level_5":
-            gates.insert(4, Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+            gates[4] = Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos)
         elif name == "player":
             player.rect.center = pos
 
@@ -60,14 +60,14 @@ def reset():
     FPS = 60  # bcz my potato laptop cannot handle 100 fps
 
     # load cannons
-    cannons = [BigChungus(), MiniGun()]
+    cannons = [BigChungus(), MiniGun(), ElBombe()]
 
 
 reset()
 
 while True:
-    if player.health <= 0:
-        reset()
+    # if player.health <= 0:
+    #     reset()
 
     entities = []
     DISPLAY.fill((33, 33, 35))
@@ -108,17 +108,17 @@ while True:
 
     player.shoot(DISPLAY, cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, entities)
 
-    # if mouse_pressed[0]:
-    #     print(mouse_pos + cam_pos)
+    if mouse_pressed[0]:
+        print(mouse_pos + cam_pos)
 
     for index, level in enumerate(levels):
         level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered, current_time, dt)
 
-        
-        for i, gate in enumerate(gates):
-            gate.draw(DISPLAY, cam_pos)
-            if index == i and len(level.tanks) == 0:
-                gate.closed = False
+        gates[index].draw(DISPLAY, cam_pos)
+        if len(level.tanks) == 0 and gates[index].closed:
+            gates[index].closed = False
+
+            HURT.play()  # uhh, this sound is very good for the gates opening
 
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
 
