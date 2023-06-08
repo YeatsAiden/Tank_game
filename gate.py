@@ -5,7 +5,7 @@ class Gate:
         self.image_closed = pg.image.load(img_paths[0]).convert_alpha()
         self.image_opened = pg.image.load(img_paths[1]).convert_alpha()
         self.rect = self.image_closed.get_rect(topleft = pos - [3, 3])
-        self.closed = True
+        self.closed = False
     
 
     def draw(self, surf, cam_pos):

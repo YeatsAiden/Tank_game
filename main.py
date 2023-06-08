@@ -5,6 +5,7 @@ from projectile import Projectile
 from load_map import Load_map
 from enemy import *
 from gate import Gate
+from cannon import *
 
 # initialize permanent variables
 player = Player()
@@ -55,6 +56,8 @@ for pos, name in load_map.get_all_spawn_positions(load_map.world_csv_data, 'spaw
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
 
+# load cannons
+cannons = [BigChungus(), MiniGun()]
 
 while True:
     entities = []
@@ -91,8 +94,13 @@ while True:
     # update the screen
     load_map.draw_world(DISPLAY, cam_pos, load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered)
 
-    new_bullet = [[player.rect.center[0], player.rect.center[1]], 400, player.cannon_angle, 2, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
-    bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, entities)
+    for cannon in cannons:
+        cannon.update(DISPLAY, player, cam_pos)
+
+    player.shoot(DISPLAY, cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, entities)
+
+    if mouse_pressed[0]:
+        print(mouse_pos + cam_pos)
     
     for index, level in enumerate(levels):
         level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, current_time, dt)

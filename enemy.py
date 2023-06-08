@@ -290,7 +290,7 @@ class MiniTank(Tank):
                          bullet_lifespan=0.75, approach_distance=10, bullet_name="mini_bullet")
 
         self.bullet.create_proccess(name="mini_bullet", fire_rate=1, bounces=False, img_path="assets/images/mini_tank/mini_tank_bullet.png",
-                                    damage=4, sound=MINI_TURRET)
+                                    damage=1, sound=MINI_TURRET)
 
     def move(self, tank_rects, tiles, player_pos, dt):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
@@ -335,17 +335,17 @@ class MiniGunTank(Tank):
         self.approach_movement(tank_rects, tiles, player_pos, dt)
 
 
-class BossTank(Tank):
-    def __init__(self, pos, initial_rotation):
-        super().__init__("assets/images/player/tank.png", "assets/images/player/cannon.png", pos, max_health=500, initial_rotation=initial_rotation, size=6,
-                         speed=10, turning_speed=40, cannon_turning_speed=180, radius_of_vision=1000, bullet_speed=300,
-                         bullet_lifespan=4, approach_distance=300, bullet_name="boss_bullet")
-
-        self.bullet.create_proccess(name="boss_bullet", fire_rate=10, bounces=False, img_path="assets/images/player/bullet.png",
-                                    damage=2, sound=NORMAL_CANNON)
-
-    def move(self, tank_rects, tiles, player_pos, dt):
-        self.approach_movement(tank_rects, tiles, player_pos, dt)
+# class BossTank(Tank):
+#     def __init__(self, pos, initial_rotation):
+#         super().__init__("assets/images/player/tank.png", "assets/images/player/cannon.png", pos, max_health=500, initial_rotation=initial_rotation, size=6,
+#                          speed=10, turning_speed=40, cannon_turning_speed=180, radius_of_vision=1000, bullet_speed=300,
+#                          bullet_lifespan=4, approach_distance=300, bullet_name="boss_bullet")
+#
+#         self.bullet.create_proccess(name="boss_bullet", fire_rate=10, bounces=False, img_path="assets/images/player/bullet.png",
+#                                     damage=2, sound=NORMAL_CANNON)
+#
+#     def move(self, tank_rects, tiles, player_pos, dt):
+#         self.approach_movement(tank_rects, tiles, player_pos, dt)
 
 
 

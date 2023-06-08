@@ -80,6 +80,7 @@ class Projectile:
                     elif self.proccesses[bullet_proccess_name]["area_damage"]:
                         distance = dist(entity.rect.center, bullet[4].center)
                         if distance <= self.proccesses[bullet_proccess_name]["damage_radius"]:
+                            print(self.proccesses[bullet_proccess_name]["damage"]*abs(sin(acos(distance/self.proccesses[bullet_proccess_name]["damage_radius"]))))
                             entity.health -= self.proccesses[bullet_proccess_name]["damage"]*abs(sin(acos(distance/self.proccesses[bullet_proccess_name]["damage_radius"])))
 
                 # draw the bullet
