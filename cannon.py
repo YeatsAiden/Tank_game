@@ -37,3 +37,8 @@ class BigChungus(Cannon):
 class MiniGun(Cannon):
     def __init__(self):
         super().__init__((1336, 752), "minigun_bullet", pg.image.load("assets/images/mini_gun_tank/mini_gun_tank_cannon.png"))
+
+
+class ElBombe(Cannon):
+    def __init__(self):
+        super().__init__((611, 222), "bomb_bullet", pg.image.load("assets/images/buff_tank/buff_tank_cannon.png"))

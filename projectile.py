@@ -60,16 +60,22 @@ class Projectile:
                 if self.check_collision(bullet[4], tiles):
                     collided = True
                     if self.proccesses[bullet_proccess_name]["bounces"]:
+                        EL_BOMBE.play()
                         bullet[1][0] *= -0.5
                         bullet[0][0] += bullet[1][0] * 2
+                    else:
+                        DESTRUCTION_OF_TURRET.play()
 
                 bullet[0][1] += sin(radians(-bullet[2])) * bullet[1] * dt
                 bullet[4].topleft = bullet[0]
                 if self.check_collision(bullet[4], tiles): 
                         collided = True
                         if self.proccesses[bullet_proccess_name]["bounces"]:
+                            EL_BOMBE.play()
                             bullet[1][1] *= -0.5
                             bullet[0][1] += bullet[1][1] * 2
+                        else:
+                            DESTRUCTION_OF_TURRET.play()
 
                 # check if the bullet collided with any entities
                 for entity in entities:
@@ -80,7 +86,6 @@ class Projectile:
                     elif self.proccesses[bullet_proccess_name]["area_damage"]:
                         distance = dist(entity.rect.center, bullet[4].center)
                         if distance <= self.proccesses[bullet_proccess_name]["damage_radius"]:
-                            print(self.proccesses[bullet_proccess_name]["damage"]*abs(sin(acos(distance/self.proccesses[bullet_proccess_name]["damage_radius"]))))
                             entity.health -= self.proccesses[bullet_proccess_name]["damage"]*abs(sin(acos(distance/self.proccesses[bullet_proccess_name]["damage_radius"])))
 
                 # draw the bullet
