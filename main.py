@@ -7,59 +7,69 @@ from enemy import *
 from gate import Gate
 from cannon import *
 
-# initialize permanent variables
-player = Player()
 
-cam_pos = pg.Vector2(0, 0)
+def reset():
+    global player, cam_pos, font, bullets, load_map, level_1, levels, gates, clock, FPS, cannons
 
-font = Font("assets/fonts/font.png", 1)
+    # initialize permanent variables
+    player = Player()
 
-bullets = Projectile()
+    cam_pos = pg.Vector2(player.rect.x, player.rect.y)
 
-load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets/world/walls.csv", "assets/world/spawns.csv"])
+    font = Font("assets/fonts/font.png", 1)
 
-bullets.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25, deals_area_damage=False, damage_r=0, sound=NORMAL_CANNON)
+    bullets = Projectile()
+
+    load_map = Load_map("assets/world/world.tmx", ["assets/world/floor.csv", "assets/world/walls.csv", "assets/world/spawns.csv"])
+
+    bullets.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25, deals_area_damage=False, damage_r=0, sound=NORMAL_CANNON)
+
+    level_1 = TankGroup([], "level_1")
+    level_2 = TankGroup([], "level_2")
+    level_3 = TankGroup([], "level_3")
+    level_4 = TankGroup([], "level_4")
+    level_5 = TankGroup([], "level_5")
+    levels = [level_1, level_2, level_3, level_4, level_5]
+    gates = []
+
+    for pos, name in load_map.get_all_spawn_positions(load_map.world_csv_data, 'spawns'):
+        if name == "normal_tank":
+            level_1.tanks.append(NormalTank(pos, random.randint(-180, 180)))
+        elif name == "mini_tank":
+            level_2.tanks.extend([MiniTank(pos + [random.randint(-20, 20), random.randint(-20, 20)], random.randint(-180, 180)) for _ in range(5)])
+        elif name == "buff_tank":
+            level_3.tanks.append(BuffTank(pos, random.randint(-180, 180)))
+        elif name == "fast_tank":
+            level_4.tanks.append(FastTank(pos, random.randint(-180, 180)))
+        elif name == "mini_gun_tank":
+            level_5.tanks.append(MiniGunTank(pos, random.randint(-180, 180)))
+        elif name == "vertical_gate_level_1":
+            gates.insert(0, Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+        elif name == "horizontal_gate_level_2":
+            gates.insert(1, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
+        elif name == "horizontal_gate_level_3":
+            gates.insert(2, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
+        elif name == "vertical_gate_level_4":
+            gates.insert(3, Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+        elif name == "vertical_gate_level_5":
+            gates.insert(4, Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
+        elif name == "player":
+            player.rect.center = pos
+
+    clock = pg.time.Clock()
+    FPS = 60  # bcz my potato laptop cannot handle 100 fps
+
+    # load cannons
+    cannons = [BigChungus(), MiniGun()]
 
 
-level_1 = TankGroup([], "level_1")
-level_2 = TankGroup([], "level_2")
-level_3 = TankGroup([], "level_3")
-level_4 = TankGroup([], "level_4")
-level_5 = TankGroup([], "level_5")
-levels = [level_1, level_2, level_3, level_4, level_5]
-gates = []
+reset()
 
-for pos, name in load_map.get_all_spawn_positions(load_map.world_csv_data, 'spawns'):
-    if name == "normal_tank":
-        level_1.tanks.append(NormalTank(pos, random.randint(-180, 180)))
-    elif name == "mini_tank":
-        level_2.tanks.extend([MiniTank(pos + [random.randint(-20, 20), random.randint(-20, 20)], random.randint(-180, 180)) for _ in range(5)])
-    elif name == "buff_tank":
-        level_3.tanks.append(BuffTank(pos, random.randint(-180, 180)))
-    elif name == "fast_tank":
-        level_4.tanks.append(FastTank(pos, random.randint(-180, 180)))
-    elif name == "mini_gun_tank":
-        level_5.tanks.append(MiniGunTank(pos, random.randint(-180, 180)))
-    elif name == "vertical_gate_level_1":
-        gates.insert(0 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
-    elif name == "horizontal_gate_level_2":
-        gates.insert(1, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
-    elif name == "horizontal_gate_level_3":
-        gates.insert(2, Gate(["assets/tile_set/gate_horizontal_closed.png", "assets/tile_set/gate_horizontal_opened.png"], pos))
-    elif name == "vertical_gate_level_4":
-        gates.insert(3 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
-    elif name == "vertical_gate_level_5":
-        gates.insert(4 ,Gate(["assets/tile_set/gate_vertical_closed.png", "assets/tile_set/gate_vertical_opened.png"], pos))
-    elif name == "player":
-        player.rect.center = pos
-
-clock = pg.time.Clock()
-FPS = 60  # bcz my potato laptop cannot handle 100 fps
-
-# load cannons
-cannons = [BigChungus(), MiniGun()]
 
 while True:
+    if player.health <= 0:
+        reset()
+
     entities = []
     DISPLAY.fill((33, 33, 35))
 

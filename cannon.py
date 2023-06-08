@@ -7,18 +7,19 @@ class Cannon:
         self.rect = pg.Rect(pos, (32, 32))  # if player collides with it, he picks it up
 
         self.image = image
+        self.picked_up = False
 
         self.bullet_name = bullet_name
 
     def check_collision_with_player(self, player):
-        if self.rect is not None:
+        if self.picked_up is False:
             if player.rect.colliderect(self.rect):
                 player.bullet_name = self.bullet_name
-                self.rect = None
+                self.picked_up = True
                 player.cannon_img = pg.transform.rotate(self.image, -90)
 
     def draw(self, surf, cam_pos):
-        if self.rect is not None:
+        if self.picked_up is False:
             placeholder = self.image
             placeholder_rect = placeholder.get_rect(center=self.rect.bottomright-cam_pos)
             surf.blit(placeholder, placeholder_rect)
