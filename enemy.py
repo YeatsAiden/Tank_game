@@ -257,6 +257,7 @@ class TankGroup:
                 tanks_to_remove.append(i)
 
         for i in tanks_to_remove[::-1]:
+            KILL.play()
             self.tanks.pop(i)
 
     def draw(self, surf):

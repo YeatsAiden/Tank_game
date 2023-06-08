@@ -12,7 +12,7 @@ class Player:
         self.rotation = 0
         self.rotation_offset = pg.Vector2(3, 0)
 
-        self.pos = pg.Vector2(300, 300)
+        self.pos = pg.Vector2(100, 100)
         self.rect = pg.FRect(self.pos[0], self.pos[1], self.image.get_width() - 2, self.image.get_height() - 2)
 
         self.rotation_speed = 270
@@ -38,10 +38,12 @@ class Player:
         self.bullet.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25, deals_area_damage=False, damage_r=0, sound=NORMAL_CANNON)
         self.bullet.create_proccess("buff_bullet", 2, False, "assets/images/buff_tank/buff_tank_bullet.png", 50, deals_area_damage=True, damage_r=50, sound=BIG_CHUNGUS)
         self.bullet.create_proccess("minigun_bullet", 0.1, False, "assets/images/mini_gun_tank/mini_gun_tank_bullet.png", 3, deals_area_damage=False, damage_r=0, sound=MINIGUN)
-        self.bullet.create_proccess("el_bombe_bullet", 2, True, "assets/images/buff_tank/buff_tank_bullet.png", 40, deals_area_damage=True, damage_r=20, sound=EL_BOMBE)
+        self.bullet.create_proccess("bomb_bullet", 2, False, "assets/images/buff_tank/buff_tank_bullet.png", 40, deals_area_damage=True, damage_r=20, sound=EL_BOMBE)
 
         self.bullet_stats = [[self.rect.center[0], self.rect.center[1]], 400, self.cannon_angle, 2, pg.FRect(0, 0, self.bullet.proccesses["ord_bullet"]['image'].get_width(), self.bullet.proccesses["ord_bullet"]['image'].get_height())]
         # -------------------|-----------------position----------------|-velocity-|-rotation-|-lifespan-|-------------------------------------------------------rect----------------------------------------------------------------------|
+
+        self.collided = False
 
     def move(self, keys_pressed, tiles, dt):
         """
@@ -147,8 +149,14 @@ class Player:
         # Look man I promise this was not stolen :\
         self.rect.x += self.velocity.x
 
+        collided_this_session = False
+
         for tile in tiles:
             if tile.colliderect(self.rect):
+                collided_this_session = True
+                if self.velocity.length() > 1 and not self.collided:
+                    CRASHING.play()
+
                 if self.velocity.x < 0:
                     self.rect.left = tile.right
                     self.velocity.x = 0
@@ -161,6 +169,9 @@ class Player:
 
         for tile in tiles:
             if tile.colliderect(self.rect):
+                collided_this_session = True
+                if self.velocity.length() > 1 and not self.collided:
+                    CRASHING.play()
                 if self.velocity.y > 0:
                     self.rect.bottom = tile.top
                     self.velocity.y = 0
@@ -168,3 +179,5 @@ class Player:
                 if self.velocity.y < 0:
                     self.rect.top = tile.bottom
                     self.velocity.y = 0
+
+        self.collided = collided_this_session
