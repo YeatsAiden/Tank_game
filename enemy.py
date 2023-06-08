@@ -113,9 +113,6 @@ class Tank:
 
         self.approach_distance = approach_distance
 
-
-        self.rect_nearby = False
-
         self.desired_cannon_rotation = 0
         self.desired_base_rotation = 0
 
@@ -153,11 +150,9 @@ class Tank:
 
 
     def drive_forward(self, tank_rects, tiles, dt):
-        self.rect_nearby = False
 
         for rect in tank_rects:
             if dist(self.rect.center, rect.center) < 20:
-                self.rect_nearby = True
                 self.rotation = rotate_to(self.rotation, calculate_angle_to_point(self.rect.center, rect.center), self.turning_speed * dt)
         
         self.rect.centerx += self.speed * cos(radians(self.rotation)) * dt
@@ -237,8 +232,9 @@ class Tank:
 
         self.rotation = rotate_to(self.rotation, (((-1)**self.base_rotated_to_the_left) * self.patrol_rotation_offset), self.turning_speed*dt)
 
-    def update(self, surf, player_pos, cam_pos, tank_rects, tiles, current_time, dt, player):
-        self.move(tank_rects, tiles, player_pos, dt)
+    def update(self, surf, player_pos, cam_pos, tank_rects, tiles, offset, area, current_time, dt, player):
+        if offset[0] * TILE_SIZE < self.rect.x < len(area[0][1][0]) * TILE_SIZE + offset[0] * TILE_SIZE and offset[1] * TILE_SIZE < self.rect.y < len(area[0][1]) * TILE_SIZE + offset[1] * TILE_SIZE:
+            self.move(tank_rects, tiles, player_pos, dt)
 
         self.rotate_cannon(player_pos, dt)
         self.shoot_player(surf, tiles, player_pos, cam_pos, current_time, dt, player)
@@ -252,10 +248,10 @@ class TankGroup:
         self.tanks = tanks  # a list of all tanks
         self.group_name = name
 
-    def update(self, surf, player, cam_pos, tank_rects, tiles, current_time, dt):
+    def update(self, surf, player, cam_pos, tank_rects, tiles, offset, area, current_time, dt):
         tanks_to_remove = []
         for i, tank in enumerate(self.tanks):
-            tank.update(surf, player.rect.center, cam_pos, tank_rects, tiles, current_time, dt, player)
+            tank.update(surf, player.rect.center, cam_pos, tank_rects, tiles, offset, area, current_time, dt, player)
 
             if tank.dead:
                 tanks_to_remove.append(i)

@@ -56,7 +56,6 @@ for pos, name in load_map.get_all_spawn_positions(load_map.world_csv_data, 'spaw
 clock = pg.time.Clock()
 FPS = 60  # bcz my potato laptop cannot handle 100 fps
 
-
 while True:
     entities = []
     DISPLAY.fill((33, 33, 35))
@@ -95,7 +94,8 @@ while True:
     new_bullet = [[player.rect.center[0], player.rect.center[1]], 400, player.cannon_angle, 2, pg.FRect(0, 0, bullets.proccesses["ord_bullet"]['image'].get_width(), bullets.proccesses["ord_bullet"]['image'].get_height())]
     bullets.bullet_process(DISPLAY, new_bullet, "ord_bullet", cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, entities)
     for index, level in enumerate(levels):
-        level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, current_time, dt)
+        level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, load_map.offset, load_map.list_of_areas_on_layers_to_be_rendered, current_time, dt)
+
         
         for gate in gates:
             gate[1].draw(DISPLAY, cam_pos)
