@@ -109,14 +109,16 @@ while True:
 
     player.shoot(DISPLAY, cam_pos, load_map.world_rects, mouse_pressed, current_time, dt, entities)
 
-    if mouse_pressed[0]:
-        print(mouse_pos + cam_pos)
-    
+    # if mouse_pressed[0]:
+    #     print(mouse_pos + cam_pos)
+
     for index, level in enumerate(levels):
         level.update(DISPLAY, player, cam_pos, [tank.rect for tank in level.tanks], load_map.world_rects, current_time, dt)
-        gates[index].draw(DISPLAY, cam_pos)
-        if len(level.tanks) == 0:
-            gates[index].closed = False
+        
+        for i, gate in enumerate(gates):
+            gate.draw(DISPLAY, cam_pos)
+            if index == i and len(level.tanks) == 0:
+                gate.closed = False
 
     player.draw(DISPLAY, cam_pos, mouse_pos, dt)
 

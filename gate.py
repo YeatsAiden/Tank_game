@@ -1,5 +1,6 @@
 from settings import *
 
+
 class Gate:
     def __init__(self, img_paths, pos):
         self.image_closed = pg.image.load(img_paths[0]).convert_alpha()
