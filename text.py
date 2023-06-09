@@ -1,4 +1,5 @@
 from settings import *
+import settings
 from game_math import *
 
 
@@ -14,7 +15,9 @@ class Font:
         self.character_width = 0
         self.characters = {}
         self.text_render = pg.event.custom_type()
+        self.text_pause = pg.event.custom_type()
         pg.time.set_timer(self.text_render, 100)
+        pg.time.set_timer(self.text_pause, 4000)
         self.speech_bubble_text_offset = self.calculate_offset()
 
         self.sentences = {}
@@ -56,6 +59,7 @@ class Font:
         # Creates a new speech_bubble process, similar process like the particle system and bullet system.
         # Dunno it might eat up all your ram, I haven't tested all these thing enough ¯\_(ツ)_/¯
         self.sentences[name] = {
+            "text": text,
             "words": [word for word in text.split()],
             "sentence": [],
             "word_index": 0,
@@ -69,7 +73,8 @@ class Font:
         # AAAAHHHHHHGHGHGHGHGHGHHGHGH my brain is fried and isn't capable of explaining this, try yourself, or if you are a prompt engineer and earn 25000$ a month from asking ChatGPT questions, then ask him :|
         # take note that settings.event is a global variable containing all events happening, put the events variable in a seperate file :\
         # This took all my blood, sweat and tears to make. (╯°□°）╯︵ ┻━┻
-        for event in EVENT:
+        # I was to lazy to look for a tutorial ._.
+        for event in settings.EVENT:
             if event.type == self.text_render:
                 if self.sentences[name]["word_index"] != len(self.sentences[name]["words"]) and not self.sentences[name]["done"]:
                     if self.sentences[name]["letter_index"] == 0:
@@ -86,11 +91,15 @@ class Font:
                         self.sentences[name]["letter_index"] = 0
                 else:
                     self.sentences[name]["done"] = True
+            if event.type == self.text_pause:
+                if self.sentences[name]["done"]:
+                    return True
         self.render_text(surf, ''.join(self.sentences[name]["sentence"]), self.sentences[name]["rect"].x + self.speech_bubble_text_offset[0], self.sentences[name]["rect"].y + self.speech_bubble_text_offset[1])
+        
     
 
     def check_if_sentence_is_to_long_for_speech_bubble(self, name, str):
-        # I make great function names "Don't you judge me Paul Blart" - Pahud a true legend, google it and watch the full scene.
+        # I make great function names, nobody makes function names like me
         width = 0
         str_array = str.split('ඞ')
         for index, line in enumerate(str_array):

@@ -6,7 +6,7 @@ class Particle:
         self.proccesses = {}
         
         
-    def chang_color(self, image, color):
+    def change_color(self, image, color):
         color_img = pygame.Surface(image.get_size())
         color_img.fill(color)
         
@@ -16,6 +16,7 @@ class Particle:
     
     # "dirt_explosion", 2, True, False, dirt_img, 0.1
     def create_proccess(self, name, duration, make_collisions, infinite, gravity, limit):
+        # yes i know it's written incorrectly, I'm to lazy to fix it :[
         self.proccesses.update({
             name:{
                 "duration": duration * 60,
@@ -30,8 +31,8 @@ class Particle:
             })
 
 
-    # particle array structure => [pos, vel, size, size_change, duration, count_down, rect, image]
-    def particle_process(self, surf, new_particle, particle_proccess_name, scroll, tiles):
+    # particle array structure => [pos, vel, size, size_change, duration, rect, image]
+    def particle_process(self, surf, new_particle, particle_proccess_name, scroll, tiles, dt):
         if (self.proccesses[particle_proccess_name]["can_append"] or self.proccesses[particle_proccess_name]["infinite"]) and len(self.proccesses[particle_proccess_name]["particles"]) < self.proccesses[particle_proccess_name]["limit"]:
             self.proccesses[particle_proccess_name]["particles"].append(new_particle)
 
@@ -42,26 +43,26 @@ class Particle:
         if len(self.proccesses[particle_proccess_name]["particles"]) > 0:
             for particle in self.proccesses[particle_proccess_name]["particles"]:
                 if not self.proccesses[particle_proccess_name]["make_collisions"]:
-                    particle[0][0] += particle[1][0]
-                    particle[0][1] += particle[1][1]
+                    particle[0][0] += particle[1][0] * dt
+                    particle[0][1] += particle[1][1] * dt
                 else:
-                    particle[0][0] += particle[1][0]
-                    particle[6].x = particle[0][0]
+                    particle[0][0] += particle[1][0] * dt
+                    particle[5].centerx = particle[0][0]
                     for tile in tiles:
-                        if tile.colliderect(particle[6]):
-                            particle[1][0] *= -0.5
+                        if tile.colliderect(particle[5]):
+                            particle[1][0] *= -0.5 * dt
                             particle[0][0] += particle[1][0] * 2
-                    particle[0][1] += particle[1][1]
-                    particle[6].y = particle[0][1]
+                    particle[0][1] += particle[1][1] * dt
+                    particle[5].centery = particle[0][1]
                     for tile in tiles:
-                        if tile.colliderect(particle[6]):
-                            particle[1][1] *= -0.5
+                        if tile.colliderect(particle[5]):
+                            particle[1][1] *= -0.5 * dt
                             particle[0][1] += particle[1][1] * 2
 
-                img = pygame.transform.scale(particle[7], [particle[2], particle[2]])
+                img = pygame.transform.scale(particle[6], [particle[2], particle[2]])
                 surf.blit(img, (particle[0][0] - scroll[0], particle[0][1] - scroll[1]))
 
-                particle[4] -= particle[5]
+                particle[4] -= dt
                 particle[1][1] += self.proccesses[particle_proccess_name]["gravity"]
                 particle[2] += particle[3]
 

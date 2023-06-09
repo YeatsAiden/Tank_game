@@ -22,7 +22,7 @@ class Player:
 
         self.max_speed = 200
         self.acceleration = 1.5  # m/s^2
-        self.velocity = pg.Vector2(0.001, 0.001)
+        self.velocity = pg.Vector2(0.001, 0.001) # Apparantly canm't be 0
 
         self.max_health = 100
         self.health = 100
@@ -37,7 +37,7 @@ class Player:
 
         self.bullet.create_proccess("ord_bullet", 1.5, False, "assets/images/player/bullet.png", 25, deals_area_damage=False, damage_r=0, sound=NORMAL_CANNON)
         self.bullet.create_proccess("buff_bullet", 2, False, "assets/images/buff_tank/buff_tank_bullet.png", 50, deals_area_damage=True, damage_r=50, sound=BIG_CHUNGUS)
-        self.bullet.create_proccess("minigun_bullet", 0.1, False, "assets/images/mini_gun_tank/mini_gun_tank_bullet.png", 3, deals_area_damage=False, damage_r=0, sound=MINIGUN)
+        self.bullet.create_proccess("minigun_bullet", 0.3, False, "assets/images/mini_gun_tank/mini_gun_tank_bullet.png", 3, deals_area_damage=False, damage_r=0, sound=MINIGUN)
         self.bullet.create_proccess("bomb_bullet", 2, False, "assets/images/buff_tank/buff_tank_bullet.png", 40, deals_area_damage=True, damage_r=20, sound=EL_BOMBE)
 
         self.bullet_stats = [[self.rect.center[0], self.rect.center[1]], 400, self.cannon_angle, 2, pg.FRect(0, 0, self.bullet.proccesses["ord_bullet"]['image'].get_width(), self.bullet.proccesses["ord_bullet"]['image'].get_height())]
@@ -107,7 +107,9 @@ class Player:
 
     def shoot(self, surf, cam_pos, tiles, mouse_pressed, current_time, dt, entities):
         self.bullet_stats = [[self.rect.center[0], self.rect.center[1]], 400, self.cannon_angle, 2, pg.FRect(0, 0, self.bullet.proccesses[self.bullet_name]['image'].get_width(), self.bullet.proccesses[self.bullet_name]['image'].get_height())]
-        self.bullet.bullet_process(surf, self.bullet_stats, self.bullet_name, cam_pos, tiles, mouse_pressed, current_time, dt, entities)
+        screen_shake = self.bullet.bullet_process(surf, self.bullet_stats, self.bullet_name, cam_pos, tiles, mouse_pressed, current_time, dt, entities)
+
+        return screen_shake if screen_shake != None else 0
 
     def rotate_cannon(self, mouse_pos, cam_pos, dt):
         desired_cannon_rotation = self.calculate_angle_to_mouse(mouse_pos, cam_pos)

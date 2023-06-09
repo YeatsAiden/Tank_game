@@ -49,6 +49,7 @@ class Load_map:
 
 
     def check_if_sprite_is_not_transparent(self, surf):
+        # I think anyone would understand what this does -_-
         for y in range(0, surf.get_height()):
             for x in range(0, surf.get_width()):
                 color = surf.get_at((x, y))

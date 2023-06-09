@@ -206,7 +206,8 @@ class Tank:
 
 
     def shoot_player(self, surf, tiles, player_pos, cam_pos, current_time, dt, player):
-        self.bullet.bullet_process(surf, [list(self.rect.center), self.bullet_speed, self.cannon_rotation, self.bullet_lifespan, pg.FRect(0, 0, 10, 10)], self.bullet_name, cam_pos, tiles, [dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target], current_time, dt, [player])
+        return self.bullet.bullet_process(surf, [list(self.rect.center), self.bullet_speed, self.cannon_rotation, self.bullet_lifespan, pg.FRect(0, 0, 10, 10)], self.bullet_name, cam_pos, tiles, [dist(player_pos, self.rect.center) <= self.shooting_range and self.cannon_on_target], current_time, dt, [player])
+        
 
 
     def check_if_dead(self):
@@ -237,10 +238,13 @@ class Tank:
             self.move(tank_rects, tiles, player_pos, dt)
 
         self.rotate_cannon(player_pos, dt)
-        self.shoot_player(surf, tiles, player_pos, cam_pos, current_time, dt, player)
+        screen_shake = self.shoot_player(surf, tiles, player_pos, cam_pos, current_time, dt, player)
         self.draw(surf, cam_pos)
 
         self.check_if_dead()
+
+        return screen_shake if screen_shake != None else 0
+
 
 
 class TankGroup:
@@ -250,8 +254,10 @@ class TankGroup:
 
     def update(self, surf, player, cam_pos, tank_rects, tiles, offset, area, current_time, dt):
         tanks_to_remove = []
+        screen_shake = 0
+
         for i, tank in enumerate(self.tanks):
-            tank.update(surf, player.rect.center, cam_pos, tank_rects, tiles, offset, area, current_time, dt, player)
+            screen_shake += tank.update(surf, player.rect.center, cam_pos, tank_rects, tiles, offset, area, current_time, dt, player)
 
             if tank.dead:
                 tanks_to_remove.append(i)
@@ -259,6 +265,8 @@ class TankGroup:
         for i in tanks_to_remove[::-1]:
             KILL.play()
             self.tanks.pop(i)
+        
+        return screen_shake
 
     def draw(self, surf):
         pass
@@ -270,7 +278,7 @@ class TankGroup:
 class NormalTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/player/tank.png", "assets/images/player/cannon.png", pos, max_health=30, initial_rotation=initial_rotation, size=1.2,
-                         speed=100, turning_speed=120, cannon_turning_speed=180, radius_of_vision=190, bullet_speed=250,
+                         speed=100, turning_speed=120, cannon_turning_speed=180, radius_of_vision=250, bullet_speed=250,
                          bullet_lifespan=0.6, approach_distance=75, bullet_name="normal_bullet")
 
         self.bullet.create_proccess(name="normal_bullet", fire_rate=1.5, bounces=False, img_path="assets/images/player/bullet.png",
@@ -283,7 +291,7 @@ class NormalTank(Tank):
 class MiniTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/mini_tank/mini_tank.png", "assets/images/mini_tank/mini_tank_cannon.png", pos, max_health=7, initial_rotation=initial_rotation, size=1,
-                         speed=60, turning_speed=90, cannon_turning_speed=180, radius_of_vision=300, bullet_speed=300,
+                         speed=60, turning_speed=90, cannon_turning_speed=180, radius_of_vision=250, bullet_speed=300,
                          bullet_lifespan=0.75, approach_distance=10, bullet_name="mini_bullet")
 
         self.bullet.create_proccess(name="mini_bullet", fire_rate=1, bounces=False, img_path="assets/images/mini_tank/mini_tank_bullet.png",
@@ -309,7 +317,7 @@ class BuffTank(Tank):
 class FastTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/fast_tank/fast_tank.png", "assets/images/fast_tank/fast_tank_cannon.png", pos, max_health=30, initial_rotation=initial_rotation, size=1,
-                         speed=200, turning_speed=270, cannon_turning_speed=180, radius_of_vision=200, bullet_speed=250,
+                         speed=200, turning_speed=270, cannon_turning_speed=180, radius_of_vision=250, bullet_speed=250,
                          bullet_lifespan=1.5, approach_distance=75, bullet_name="fast_bullet")
 
         self.bullet.create_proccess(name="fast_bullet", fire_rate=1, bounces=False, img_path="assets/images/fast_tank/fast_tank_bullet.png",
@@ -322,10 +330,10 @@ class FastTank(Tank):
 class MiniGunTank(Tank):
     def __init__(self, pos, initial_rotation):
         super().__init__("assets/images/mini_gun_tank/mini_gun_tank.png", "assets/images/mini_gun_tank/mini_gun_tank_cannon.png", pos, max_health=30, initial_rotation=initial_rotation, size=1.6,
-                         speed=50, turning_speed=90, cannon_turning_speed=270, radius_of_vision=200, bullet_speed=250,
+                         speed=50, turning_speed=90, cannon_turning_speed=270, radius_of_vision=250, bullet_speed=250,
                          bullet_lifespan=0.5, approach_distance=75, bullet_name="a_lot_of_bullets")
 
-        self.bullet.create_proccess(name="a_lot_of_bullets", fire_rate=0.1, bounces=False, img_path="assets/images/mini_gun_tank/mini_gun_tank_bullet.png",
+        self.bullet.create_proccess(name="a_lot_of_bullets", fire_rate=0.3, bounces=False, img_path="assets/images/mini_gun_tank/mini_gun_tank_bullet.png",
                                     damage=1, sound=MINIGUN)
 
     def move(self, tank_rects, tiles, player_pos, dt):

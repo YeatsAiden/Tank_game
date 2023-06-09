@@ -3,6 +3,7 @@ from math import cos, sin, radians, degrees, atan2, radians, dist, acos
 import random
 import time
 import pandas
+import asyncio
 
 # Trust me bro I'm an engineer 😎
 # ok
@@ -11,6 +12,7 @@ pg.init()
 
 DIS_SIZE = DIS_W, DIS_H = 480, 320
 DISPLAY = pg.display.set_mode((DIS_W, DIS_H), flags=pg.SCALED | pg.RESIZABLE)
+pg.display.set_caption("driftin'n'tankin")
 
 pg.mouse.set_visible(False)
 
@@ -35,4 +37,6 @@ KILL = pg.mixer.Sound("assets/sounds/kill.wav")
 MINI_TURRET = pg.mixer.Sound("assets/sounds/mini_turret.wav")
 MINIGUN = pg.mixer.Sound("assets/sounds/minigun.wav")
 NORMAL_CANNON = pg.mixer.Sound("assets/sounds/normal_cannon.wav")
+# Le Music
+MUSIC = pg.mixer.music.load("assets/sounds/a_song.wav")
 
